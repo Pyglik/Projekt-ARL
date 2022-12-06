@@ -1,5 +1,5 @@
 function flying_state = get_flying_state(flying_state_sub)
-    flying_state = receive(flying_state_sub, 5).rssi; % czas oczekiwania [s]
+    flying_state = receive(flying_state_sub, 5).State; % czas oczekiwania [s]
 end
 
 % 0 - Landed

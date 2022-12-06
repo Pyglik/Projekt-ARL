@@ -10,7 +10,9 @@ function odometry = get_odometry(odometry_sub)
     x = odom.Pose.Pose.Orientation.X;
     y = odom.Pose.Pose.Orientation.Y;
     z = odom.Pose.Pose.Orientation.Z;
+    % roll pitch yaw
     rot = quat2eul([w x y z]);
+    rot = rot(end:-1:1);
     
     odometry = [pos, rot];
 end
