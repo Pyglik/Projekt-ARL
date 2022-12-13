@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export ROS_IP=192.168.0.58
+export ROS_MASTER_URI=http://192.168.0.58:11311
+
+cd /home/bebop2/Desktop
+sudo ./sphinx.sh
+sleep 10
+./bebop_autonomy.sh
