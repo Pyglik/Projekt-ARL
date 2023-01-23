@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Running Parrot-Sphinx remotely &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to add shadows in your scene" href="shadows.html" />
+    <link rel="prev" title="About Firmwared" href="firmwared.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="advanced_topics.html">Advanced topics</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="firmwared.html">About Firmwared</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Running Parrot-Sphinx remotely</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-the-server">Start the server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#start-the-gazebo-s-graphical-user-interface">Start the Gazebo’s graphical user interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#start-parrot-sphinx-s-web-client">Start Parrot-Sphinx’s Web client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#control-the-drone-remotely">Control the drone remotely</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="shadows.html">How to add shadows in your scene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gazebo_topics.html">How to visualize and control Parrot-Sphinx via Gazebo’s topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openstreetmap.html">Create a world with OpenStreetMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handling.html">How to make a drone follow scripted trajectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virtualbox.html">Running sphinx in VirtualBox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="followme.html">How to use Follow Me with Parrot-Sphinx</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="advanced_topics.html">Advanced topics</a> &raquo;</li>
+        
+      <li>Running Parrot-Sphinx remotely</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="running-parrot-sphinx-remotely">
+<h1>Running Parrot-Sphinx remotely<a class="headerlink" href="#running-parrot-sphinx-remotely" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial explains how to start a simulation using a centralized server,
+with multiple clients running the same scene.</p>
+<p>Say we want to run a server / client simulation across two machines with IP
+addresses 172.20.220.1 and 172.20.220.2. Before proceeding to the next step,
+you must make sure that Parrot-Sphinx is installed on both machines.
+Check the <a class="reference internal" href="installation.html"><span class="doc">Installation procedure</span></a> page.</p>
+<div class="section" id="start-the-server">
+<h2>Start the server<a class="headerlink" href="#start-the-server" title="Permalink to this headline">¶</a></h2>
+<p>You need to select one machine to run the the server; we’ll go with
+<em>172.20.220.1</em>. ssh into the machine and start the server in remote mode
+by setting the <code class="docutils literal notranslate"><span class="pre">--interface</span></code> option to the name of its remote interface (eth0
+in this example):</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nv">DISPLAY</span><span class="o">=</span>:0 sphinx-server --interface<span class="o">=</span>eth0 /opt/parrot-sphinx/usr/share/sphinx/drones/bebop2.drone
+</pre></div>
+</div>
+<p><em>Note that you must be logged into the machine with a local display to connect
+to the X server.</em></p>
+<p>In case you get the following error:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">xauth: (argv):1:  unable to open display &quot;:0&quot;.</span>
+</pre></div>
+</div>
+<p>It may be because the display name is incorrect. To determine the correct value,
+enter the following command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ls /tmp/.X11-unix <span class="p">|</span> tr <span class="s1">&#39;X&#39;</span> <span class="s1">&#39;:&#39;</span>.
+</pre></div>
+</div>
+</div>
+<div class="section" id="start-the-gazebo-s-graphical-user-interface">
+<h2>Start the Gazebo’s graphical user interface<a class="headerlink" href="#start-the-gazebo-s-graphical-user-interface" title="Permalink to this headline">¶</a></h2>
+<p>Now you can start a client on <em>172.20.220.2</em>, by setting the option
+<code class="docutils literal notranslate"><span class="pre">--server-uri</span></code> to the IP and port where the server is listening:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx-client --server-uri<span class="o">=</span><span class="m">172</span>.20.220.1:11345
+</pre></div>
+</div>
+<p>The TCP port should be the same as the one indicated in Parrot-Sphinx’s shell output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[Msg] connection info: 127.0.0.1 11345
+</pre></div>
+</div>
+</div>
+<div class="section" id="start-parrot-sphinx-s-web-client">
+<h2>Start Parrot-Sphinx’s Web client<a class="headerlink" href="#start-parrot-sphinx-s-web-client" title="Permalink to this headline">¶</a></h2>
+<p>To visualize the navdata and interact with the simulation, open a Web browser
+and navigate to the server’s URL: <a class="reference external" href="http://172.20.220.1:9002">http://172.20.220.1:9002</a></p>
+</div>
+<div class="section" id="control-the-drone-remotely">
+<h2>Control the drone remotely<a class="headerlink" href="#control-the-drone-remotely" title="Permalink to this headline">¶</a></h2>
+<p>In case the drone controller is located on the remote PC, it is possible to
+tie the controller to the simulated drone by starting Parrot-Sphinx in <em>port
+forwarding</em> mode.</p>
+<p>Check the section <a class="reference external" href="connectdrone.html#virtual-ethernet">virtual ethernet</a>
+for more information.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="shadows.html" class="btn btn-neutral float-right" title="How to add shadows in your scene" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="firmwared.html" class="btn btn-neutral float-left" title="About Firmwared" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

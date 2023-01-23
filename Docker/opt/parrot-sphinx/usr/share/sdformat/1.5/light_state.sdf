@@ -1,0 +1,13 @@
+<!-- State information for a light -->
+<element name="light" required="*">
+  <description>Light state</description>
+
+  <attribute name="name" type="string" default="__default__" required="1">
+    <description>Name of the light</description>
+  </attribute>
+
+  <element name="pose" type="pose" default="0 0 0 0 0 0" required="0">
+    <description>A position(x,y,z) and orientation(roll, pitch yaw) with respect to the specified frame.</description>
+  </element>
+
+</element> <!-- End Light -->

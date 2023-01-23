@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ -n "${V}" ]; then
+    set -x
+fi
+set -eu
+
+jport=8383 # default json-rpc port
+
+for var in "$@"; do
+    case $var in
+        --jport=*)
+            jport="${var#*=}"
+            ;;
+        --help)
+            echo "Opens Parrot-sphinx dashboard with your favorite web browser"
+            echo "Options:"
+            echo "    --jport=<number>: specify a JSON-RPC port"
+            echo "           different from the default one (which is ${jport})"
+            echo "    --help: this page"
+            exit 0
+            ;;
+    esac
+done
+
+echo "Using JSON-RPC port ${jport}."
+
+# retrieve the http port opened by Sphinx
+res=$(echo '{"jsonrpc": "2.0", "method": "GetInfo", "params": {}, "id": 1}' \
+    | curl -s -d @- http://localhost:${jport} \
+    | jq '.result.world.plugins' 2>/dev/null \
+    | jq -r '.[].dashboard_port' 2>/dev/null \
+    | grep -v "null") \
+    || res=""
+
+if [ "${res}" == "" ] || ! declare -i num="10#'${res}'" &>/dev/null; then
+    echo "Error: Cannot connect to sphinx. Is Sphinx running?"
+    exit 1
+fi
+
+wport=${res}
+xdg-open "http://localhost:${wport}"

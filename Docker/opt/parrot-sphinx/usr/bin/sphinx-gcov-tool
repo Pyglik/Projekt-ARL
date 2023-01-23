@@ -1,0 +1,206 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import re
+import shutil
+import subprocess
+import time
+
+DEVICE = '10.202.0.1:9050'
+FIRMWARE_JENKINS_DIR = '/simulator/jenkins'
+FIRMWARE_MANIFEST_XML = '/etc/manifest.xml'
+FIRMWARE_GCOV_DIR = '/var/lib/gcov'
+
+SIGNALS = {
+    'SIGINT': 2,
+    'SIGUSR1': 10,
+}
+
+#===============================================================================
+# Generic task error.
+#===============================================================================
+class TaskError(Exception):
+    pass
+
+def adb_find_device():
+    re_device = re.compile('^' + DEVICE + '\tdevice$', re.MULTILINE)
+    output = subprocess.check_output(['adb', 'devices'])
+    devices = re_device.findall(output)
+    return devices
+
+def adb_connect():
+    print 'Connecting adb to firmware...'
+    subprocess.call(['adb', 'connect', DEVICE])
+
+def adb_pull_jenkins():
+    print 'Pulling jenkins folder...'
+    exec_cmd('adb -s ' + DEVICE + ' pull ' + FIRMWARE_JENKINS_DIR + ' ' + JENKINS_FOLDER)
+
+def adb_pull_manifest():
+    print 'Pulling manifest.xml...'
+    exec_cmd('mkdir -p %s' % MANIFEST_FOLDER)
+    exec_cmd('adb -s ' + DEVICE + ' pull ' + FIRMWARE_MANIFEST_XML + ' ' + MANIFEST_FOLDER)
+
+def adb_pull_gcov():
+    print 'Pulling gcov folder...'
+    exec_cmd('adb -s ' + DEVICE + ' pull ' + FIRMWARE_GCOV_DIR + ' ' + GCOV_FOLDER)
+
+def adb_pull_code_coverage_services():
+    print 'Pulling code_coverage_services...'
+    exec_cmd('adb -s ' + DEVICE + ' pull /simulator/code_coverage_services ' + OUTPUT_DIR + '/code_coverage_services')
+
+def run_lcov():
+    print 'Running lcov...'
+    base_directory_option = ''
+    if USE_SOURCE:
+        if USE_MANIFEST:
+            base_directory_option = '--base-directory ' + SOURCES_FOLDER
+        else:
+            base_directory_option = '--base-directory ' + SOURCES_FOLDER + '/' + BUILD_TAG + '/' + CHECKOUT_NAME
+    if os.path.exists(COVERAGE_FOLDER):
+        shutil.rmtree(COVERAGE_FOLDER)
+    os.makedirs(COVERAGE_FOLDER)
+    exec_cmd('parrot-lcov ' + base_directory_option + ' --directory ' + GCOV_FOLDER + ' --capture --output-file ' + COVERAGE_FOLDER + '/cov.info')
+
+def run_genhtml():
+    print 'Running genhtml...'
+    no_source_option = ''
+    if not USE_SOURCE:
+        no_source_option = '--no-source'
+    if os.path.exists(HTML_FOLDER):
+        shutil.rmtree(HTML_FOLDER)
+    os.makedirs(HTML_FOLDER)
+    exec_cmd('parrot-genhtml ' + no_source_option + ' -o ' + HTML_FOLDER + ' ' + COVERAGE_FOLDER + '/cov.info')
+
+def get_jenkins_build_info(filename):
+    f = open(JENKINS_FOLDER + '/build/' + filename, 'r')
+    return f.read().rstrip()
+
+def get_build_tag():
+    return get_jenkins_build_info('BUILD_TAG')
+
+def get_build_url():
+    return get_jenkins_build_info('BUILD_URL')
+
+def get_jenkins_checkout_info(filename):
+    f = open(JENKINS_FOLDER + '/checkout/' + filename, 'r')
+    return f.read().rstrip()
+
+def get_checkout_name():
+    return get_jenkins_checkout_info('checkout_name')
+
+def get_remote_archive_file():
+    return get_jenkins_checkout_info('tar_file')
+
+def download_archive_file():
+    local_archive_folder = OUTPUT_DIR + '/sources'
+    local_archive_file = local_archive_folder + '/' + LOCAL_ARCHIVE_FILE
+    if not os.path.isfile(local_archive_file):
+        if not os.path.exists(local_archive_folder):
+            os.makedirs(local_archive_folder)
+        print 'Downloading archive...'
+        exec_cmd('wget ' + BUILD_URL + 'artifact/' + REMOTE_ARCHIVE_FILE + ' -O ' + local_archive_file)
+
+def extract_archive_file():
+    extract_folder = OUTPUT_DIR + '/sources/' + BUILD_TAG
+    if not os.path.exists(extract_folder):
+        os.makedirs(extract_folder)
+        print 'Extracting archive...'
+        exec_cmd('tar xzf ../' + LOCAL_ARCHIVE_FILE, extract_folder)
+
+def interrupt_services():
+    f = open(OUTPUT_DIR + '/code_coverage_services')
+    for line in f.readlines():
+        # rstrip to remove the new line
+        words = line.rstrip().split()
+        if len(words) >= 1:
+            service = words[0]
+            if len(words) >= 2:
+                signal = words[1]
+            else:
+                # default is SIGINT
+                signal = 'SIGINT'
+        signum = SIGNALS[signal]
+        print 'Interrupting service ' + service + ' with signal ' + signal + ' (' + str(signum) + ')...'
+        exec_cmd('adb -s ' + DEVICE + ' shell ulogger "Sending signal ' + signal + ' (' + str(signum) + ') to ' + service + '"')
+        exec_cmd('adb -s ' + DEVICE + ' shell pterm ' + service + ':' + str(signum))
+
+#===============================================================================
+# Execute the given command in given directory with given extra environment.
+#===============================================================================
+def exec_cmd(cmd, cwd=None):
+    if not cwd:
+        cwd = os.getcwd()
+    # Execute command
+    try:
+        process = subprocess.Popen(cmd, cwd=cwd, shell=True)
+        process.wait()
+        if process.returncode != 0:
+            raise TaskError("Command failed (returncode=%d)" % process.returncode)
+    except OSError as ex:
+        raise TaskError("Exception caught ([err=%d] %s)" % (ex.errno, ex.strerror))
+
+parser = argparse.ArgumentParser(description='Code coverage.')
+parser.add_argument('-o', '--output', type=str, default='output')
+parser.add_argument('--no-source', dest='source', action='store_false')
+parser.add_argument('--manifest', dest='manifest', action='store_true')
+parser.set_defaults(source=True)
+parser.set_defaults(manifest=False)
+
+args = parser.parse_args()
+
+OUTPUT_DIR = args.output
+USE_SOURCE = args.source
+USE_MANIFEST = args.manifest
+
+# Global variables
+COVERAGE_FOLDER = OUTPUT_DIR + '/coverage'
+GCOV_FOLDER = OUTPUT_DIR + '/gcov'
+HTML_FOLDER = OUTPUT_DIR + '/html'
+JENKINS_FOLDER = OUTPUT_DIR + '/jenkins'
+MANIFEST_FOLDER = OUTPUT_DIR + '/manifest'
+SOURCES_FOLDER = OUTPUT_DIR + '/sources'
+
+if not adb_find_device():
+    adb_connect()
+
+if USE_SOURCE:
+    if USE_MANIFEST:
+        adb_pull_manifest()
+    else:
+        # Pull jenkins and firmware information
+        adb_pull_jenkins()
+
+adb_pull_code_coverage_services()
+
+# Interrupt services
+interrupt_services()
+
+# Wait a little
+time.sleep(5)
+
+# Pull gcov files
+adb_pull_gcov()
+
+# Get sources
+if USE_SOURCE:
+    if USE_MANIFEST:
+        # We need a real git project with manifest to execute repo
+        exec_cmd('git init', cwd=MANIFEST_FOLDER)
+        exec_cmd('git add .', cwd=MANIFEST_FOLDER)
+        exec_cmd('git commit -m DUMMY || true', cwd=MANIFEST_FOLDER)
+        exec_cmd('mkdir -p %s' % SOURCES_FOLDER)
+        exec_cmd('repo init -u file://%s -m manifest.xml' % os.path.abspath(MANIFEST_FOLDER), cwd=SOURCES_FOLDER)
+        exec_cmd('repo sync -c -d', cwd=SOURCES_FOLDER)
+    else:
+        BUILD_TAG = get_build_tag()
+        LOCAL_ARCHIVE_FILE = BUILD_TAG + '.tar.gz'
+        BUILD_URL = get_build_url()
+        CHECKOUT_NAME = get_checkout_name()
+        REMOTE_ARCHIVE_FILE = get_remote_archive_file()
+        download_archive_file()
+        extract_archive_file()
+
+run_lcov()
+run_genhtml()

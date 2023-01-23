@@ -1,0 +1,91 @@
+#!/bin/bash
+
+NB_ARGS=4
+if [ "$#" -ne ${NB_ARGS} ]; then
+	echo "Wrong number of arguments ${0}: $# instead of ${NB_ARGS}"
+	exit -1
+fi
+
+set -e
+set -u
+
+requested_port=${1}
+ip_address=${2}
+unavailable_ports=(${3})
+exact=${4}
+
+function is_port_available {
+	local port=$1
+
+	# scan for listening daemon (timeout after 0 seconds)
+	local cmd="nc -w 0 -q 0 -z ${ip_address} ${port} < /dev/null > /dev/null"
+	timeout 5 bash -c "${cmd}"
+	ret=$?
+	# returned value '124' means that a timeout occured
+	if [ ${ret} = 0 ] || [ ${ret} = 124 ]; then
+		echo false;
+	else
+		echo true;
+	fi
+}
+
+function get_next_available_port {
+	local port=$1
+
+	if [ ${#unavailable_ports[@]} -gt 0 ]; then
+		for unavailable_port in ${unavailable_ports[@]}
+		do
+			if [ ${port} = ${unavailable_port} ]; then
+				port=$((port+1))
+				get_next_available_port ${port} && return
+			fi
+		done
+	fi
+	echo ${port}
+}
+
+if [ "${exact}" = 1 ]; then
+	# check if requested port is valid and available
+	if [ ${requested_port} -lt 1024 ]; then
+		echo "port number too small: ${requested_port}" > /dev/stderr
+		exit 1;
+	fi
+	if [ ${requested_port} -gt 65535 ]; then
+		echo "port number too large: ${requested_port}" > /dev/stderr
+		exit 1;
+	fi
+	if [ $(is_port_available "${requested_port}") = false ]; then
+		echo "address ${ip_address}:${requested_port} already in use" > /dev/stderr
+		exit 1;
+	fi
+	port=$(get_next_available_port ${requested_port})
+	if [ ${port} != ${requested_port} ]; then
+		echo "address ${ip_address}:${requested_port} already in use" > /dev/stderr
+		exit 1;
+	fi
+else
+	port=$(get_next_available_port ${requested_port})
+
+	# find an available valid port
+	read lower_port upper_port < /proc/sys/net/ipv4/ip_local_port_range
+	while [ $(is_port_available ${port}) = false ] && [ ${port} -le ${upper_port} ]; do
+		$(is_port_available ${port}) && break
+		port=$(get_next_available_port $((port+1)))
+	done
+	if [ ${port} -gt ${upper_port} ]; then
+		if [ ${requested_port} -le ${lower_port} ]; then
+			echo "could not find an opened port at ${ip_address}" > /dev/stderr
+			exit 1;
+		fi
+		port=$(get_next_available_port ${lower_port})
+		while [ $(is_port_available ${port}) = false ] && [ ${port} -lt ${requested_port} ]; do
+			$(is_port_available ${port}) && break
+			port=$(get_next_available_port $((port+1)))
+		done
+		if [ ${port} = ${requested_port} ]; then
+			echo "could not find an opened port at ${ip_address}" > /dev/stderr
+			exit 1;
+		fi
+	fi
+fi
+echo ${port}

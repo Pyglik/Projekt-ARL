@@ -1,0 +1,20 @@
+material simple_checkerboard/simple_checkerboard
+{
+  receive_shadows on
+
+  technique
+  {
+    pass
+    {
+      ambient 0.5 0.5 0.5 1.000000
+
+      texture_unit
+      {
+        scale 0.0002 0.0002
+        texture simple_checkerboard.jpg
+        filtering anisotropic
+        max_anisotropy 16
+      }
+    }
+  }
+}

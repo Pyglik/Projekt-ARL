@@ -1,0 +1,27 @@
+syntax = "proto2";
+package sphinx_msgs;
+
+/// \ingroup sphinx_msgs
+/// \interface Vehicle
+/// \brief Vehicle message
+
+message Vehicle
+{
+  /// \brief Target hand wheel.
+  optional double cmd_hand_wheel = 1;
+
+  /// \brief Target hand brake.
+  optional double cmd_hand_brake = 2;
+
+  /// \brief Target gas pedal.
+  optional double cmd_gas_pedal = 3;
+
+  /// \brief Target brake pedal.
+  optional double cmd_brake_pedal = 4;
+
+  /// \brief Target key state.
+  optional int32 cmd_key = 5;
+
+  /// \brief Target direction state.
+  optional int32 cmd_direction = 6;
+}

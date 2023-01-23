@@ -1,0 +1,337 @@
+#!/bin/bash
+
+NB_ARGS=18
+if [ "$#" -ne ${NB_ARGS} ]; then
+	echo "Missing arguments to ${0}: $# < ${NB_ARGS}"
+	exit -1
+fi
+
+set -e
+
+action=${1}
+base_workspace=${2}
+ro_mount_point=${3}
+fs_dir=${4}
+fs_size=${5}
+rw_dir=${6}
+union_mount_point=${7}
+x11_path=${8}
+x11_mount_point=${9}
+hostlibs_paths=${10}
+hostlibs_root=${11}
+firmware=${12}
+sha1=${13}
+only_unregister=${14}
+prevent_removal=${15}
+verbose=${16}
+firmwared_exec_dir=${17}
+mountbind=${18}
+
+if [ "${verbose}" = "y" ]; then
+	set -x
+fi
+
+# normalize some paths to facilitate coming comparisons
+if [ ! -z "${union_mount_point}" ]; then
+	union_mount_point=$(realpath -s -m ${union_mount_point})
+	hostlibs_root_full_path=$(realpath -s -m ${union_mount_point}${hostlibs_root})
+fi
+if [ ! -z "${x11_mount_point}" ]; then
+	x11_mount_point=$(realpath -s -m ${x11_mount_point})
+fi
+if [ ! -z "${mountbind}" ]; then
+	IFS=:
+	read -ra mountbind_arr <<<"${mountbind}"
+	unset IFS
+	if [ "${#mountbind_arr[@]}" -ne "2" ]; then
+		printf "mountbind %s should specify two paths
+		 separated by a colon\n" "${mountbind}"
+		exit 1
+	fi
+	mountbind_host=$(realpath -s -m "${mountbind_arr[0]}")
+	union_mount_point=$(realpath -s -m ${union_mount_point})
+	mountbind_point=$(realpath -s -m "${union_mount_point}${mountbind_arr[1]}")
+	if [ ! -d "${mountbind_host}" ]; then
+		printf "mountbind host path %s is not a directory\n" "${mountbind_host}"
+		exit 1
+	fi
+fi
+
+# Check that $union_mount_point is safe.
+canonicalized=$(readlink -m "$union_mount_point")
+if [[ $? != 0 ]]; then
+	printf "Bad union mount point path: %s\n" "$union_mount_point"
+	exit 1
+fi
+if [[ "$canonicalized" == / ]]; then
+	printf "Using / as union mount point!\n"
+	exit 1
+fi
+unset canonicalized
+
+workdir=${fs_dir}/workdir
+
+
+ldconfig_sphinx=$firmwared_exec_dir/ldconfig_sphinx
+if [[ ! -x "${ldconfig_sphinx}" ]]; then
+	printf 1>&2 '%s: %s is not an executable file!\n' \
+		"$0" "${ldconfig_sphinx}"
+	exit 1
+fi
+
+# mount_bind_ro src dst
+mount_bind_ro()
+{
+	mount --bind "$1" "$2"
+	# For versions of mount < 2.27 (Ubuntu < 16.04) the -o options get
+	# ignored when combined with --bind. Hence the need for a remount.
+	mount -o ro,remount,bind "$1" "$2"
+}
+
+# mount_bind_ro_recursive src dst
+mount_bind_ro_recursive()
+{
+	local src0=$(readlink -f "$1")
+	local src0len=${#src0}
+	local src
+	local submounts=()
+
+	# Find all submounts of $src0.
+	while read -rd '' src; do
+		# Keep only lines starting with "${src0}" (subpaths of the
+		# parent directory). This is a more precise version of the
+		# 'grep -zF "${src0}"' filter, which was added for efficiency.
+		if [[ "${src:0:${src0len}}" == "${src0}" ]]; then
+			submounts+=("${src}")
+		fi
+	done < <(
+		findmnt -cnrv | # list mounts (uses escape sequences)
+		grep -o '^[^ ]*' | # get filesystem path (first column)
+		sort | uniq | # remove duplicates (maintains a correct order)
+		tr '\n' '\0' |
+		xargs -0n1 printf '%b\0' | # substitute \x?? escape sequences
+		grep -zF "${src0}" # keep only lines containing the parent dir
+	)
+
+	# The kernel will use up all available memory if asked to keep track of
+	# an absurd amount of bind-mounts. This check is here to prevent that
+	# situation from happening.
+	if ((${#submounts[@]} > 32)); then
+		printf 'Error: Too many mount points under %s!\n' \
+		       "${src0}" 1>&2
+		exit 1
+	fi
+
+	mount_bind_ro "$1" "$2"
+	for src in "${submounts[@]}"; do
+		mount_bind_ro "${src}" "$2/${src:${src0len}}"
+	done
+}
+
+
+# umount_lazy {directory|device}...
+umount_lazy()
+{
+	# umount
+	# with "lazy" (-l) option to perform unmounting when device is not busy anymore.
+	# beware: "recursive" option is not supported on Ubuntu 14.04. So we need to unmount one by one.
+	umount -l "$@"
+}
+
+# unmount mount points that have been created by the instance
+umount_childs()
+{
+	findmnt -cnrv |
+	cut -f1 -d ' ' |
+	sort --reverse |
+	uniq |
+	grep "${union_mount_point}/" |
+	grep -v "${x11_mount_point}" |
+	grep -v "${hostlibs_root_full_path}" |
+	while read line; do umount_lazy ${line} || true; done
+}
+
+handle_newest_stdlibcpp()
+{
+	if [ -z "${1// }" ]; then
+		printf "Union mount point should not be void\n"
+		exit 1
+	fi
+
+	libpath="usr/lib/x86_64-linux-gnu/libstdc++.so.6"
+	ump="$1"  #union mount point
+	host_cpp_version=$(ls -1 -r /${libpath}.0.* | head -n1 | sed 's@.*\.\([0-9]\+\)@\1@')
+	local_cpp_version=$(ls -1 -r ${ump}/${libpath}.0.* | head -n1 | sed 's@.*\.\([0-9]\+\)@\1@')
+
+	printf "host libstdc++ version = %s\n" "${host_cpp_version}"
+	printf "local libstdc++ version = %s\n" "${local_cpp_version}"
+
+	if [ -z "${host_cpp_version}" ] || [ -z "${local_cpp_version}" ]; then
+		printf "Warning: unable to find libstdc++\n"
+		return
+	fi
+
+	if [ "${host_cpp_version}" -le "${local_cpp_version}" ]; then
+		# nothing to do in that case
+		return
+	fi
+
+	#copy the most recent lib in firmware instance
+	cp /${libpath}.0.$host_cpp_version	\
+			${ump}/${libpath}.0.$host_cpp_version
+
+	# update the symbolic link (visible from within the instance)
+	rm -f ${ump}/${libpath}
+	ln -s /${libpath}.0.$host_cpp_version ${ump}/${libpath}
+}
+
+
+if [ "${action}" = "init" ];
+then
+	# create the rw/workdir filesystem with the specified size
+	# overlayfs will use this filesytem to report the union filesystem
+	# disk usage inside the firmware root fs
+	mkdir -p ${fs_dir}
+	if [ "$fs_size" != "unlimited" ];
+	then
+		fs_size=$(numfmt --from=iec --to=non ${fs_size^^})
+		mount -t tmpfs -o size=${fs_size} tmpfs ${fs_dir}
+	fi
+
+	# create mount points
+	mkdir -p ${ro_mount_point} ${rw_dir} ${union_mount_point} ${workdir}
+
+	# mount the ro layer and remount it with a rw layer on top
+	if [ -d "${firmware}" ];
+	then
+		mount_bind_ro ${firmware} ${ro_mount_point}
+	else
+		# refresh modification date of firmware file
+		# that way, we can retrieve the least used firmware when purging
+		touch ${firmware}
+		# beware of the limited amount of 'loop' devices
+		mount -o ro,loop ${firmware} ${ro_mount_point}
+	fi
+	mount -t overlay -o \
+		lowerdir=${ro_mount_point},upperdir=${rw_dir},workdir=${workdir} \
+		firmwared_${sha1} ${union_mount_point}
+
+
+elif [ "${action}" = "init_extra" ];
+then
+	# mount host system library paths
+	if [ -n "${hostlibs_paths}" ];
+	then
+		# First copy the host's libstdc++ if it is more recent
+		# It is required by some GPU drivers (like radeon r600), which
+		# come from the host as well.
+		handle_newest_stdlibcpp ${union_mount_point}
+
+		mkdir -p ${hostlibs_root_full_path}
+
+		IFS=:
+		for i in ${hostlibs_paths}; do
+			if [ -d "${i}" ];
+			then
+				mkdir -p ${hostlibs_root_full_path}/${i}
+				mount_bind_ro_recursive ${i} ${hostlibs_root_full_path}/${i}
+			else
+				echo "Library path ${i} is not a directory. Aborting" 1>&2
+				exit 1
+			fi
+		done
+		unset IFS
+
+		#### HACK: some firmware releases are generated with buggy
+		####       Alchemy version, which does not create ld.so.conf
+		####       properly. To be removed when latest firmware releases
+		####       have a fixed version of Alchemy.
+	        cat > ${union_mount_point}/etc/ld.so.conf <<EOF
+/lib/x86_64-linux-gnu
+/lib
+/usr/lib/x86_64-linux-gnu
+/usr/lib
+EOF
+		#### end of HACK
+
+		# Add default library search paths (with lower priority than the
+		# firmware's libraries). ldconfig_sphinx reads both
+		# /etc/ld.so.conf and /simulator/host/etc/ld.so.conf and sets up
+		# the cache in such a way that ld will always load libraries
+		# from the former unless they can only be found in the latter.
+		cp -aL --parents /etc/ld.so.conf* ${hostlibs_root_full_path}/
+		find ${hostlibs_root_full_path}/etc/ld.so.conf* -type f |
+		xargs sed -i -e"s|^/|${hostlibs_root}/|" \
+				-e"s|^include\s\+/|include ${hostlibs_root}/|"
+		"${ldconfig_sphinx}" -X -r "${union_mount_point}"
+	fi
+
+	# create X11 mount point
+	mkdir -p ${x11_mount_point}
+
+	# mount the X11 path
+	if [ -d "${x11_path}" ];
+	then
+		mount_bind_ro ${x11_path} ${x11_mount_point}
+	else
+		echo "X11 path ${x11_path} is not a directory. Aborting" 1>&2
+	fi
+
+	# mount the directory from mountbind option
+	if [ -n "${mountbind}" ];
+	then
+		# create mount point
+		mkdir -p ${mountbind_point}
+		mount --bind ${mountbind_host} ${mountbind_point}
+	fi
+elif [ "${action}" = "remount" ];
+then
+	umount_childs
+
+	if [ "$fs_size" != "unlimited" ];
+	then
+		fs_size=$(numfmt --from=iec --to=non ${fs_size^^})
+		mount -o remount,size=${fs_size} ${fs_dir}
+	fi
+
+	mount -o remount ${union_mount_point}
+
+elif [ "${action}" = "clean" ];
+then
+	umount_lazy ${union_mount_point} ${ro_mount_point}
+	if [ "$fs_size" != "unlimited" ];
+	then
+		umount_lazy ${fs_dir}
+	fi
+
+	# optionally remove the artifacts
+	if [ ! "${prevent_removal}" = "y" ];
+	then
+		if [ "${only_unregister}" = "false" ];
+		then
+			rm -rf ${base_workspace}
+		fi
+	fi
+elif [ "${action}" = "clean_extra" ];
+then
+	if [ -n "${mountbind}" ];
+	then
+		umount_lazy ${mountbind_point}
+	fi
+
+	if [ -d "${x11_path}" ];
+	then
+		umount_lazy ${x11_mount_point}
+	fi
+
+	IFS=:
+	for i in ${hostlibs_paths}; do
+		# Note: A lazy unmount will cause the mount point to be
+		# recursively unmounted, which is the desired effect.
+		umount_lazy ${hostlibs_root_full_path}/${i}
+	done
+	unset IFS
+else
+	echo "wrong action string \"$action\""
+	exit 1
+fi

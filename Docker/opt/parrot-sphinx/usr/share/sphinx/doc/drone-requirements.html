@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Take off and hints, drone by drone &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Anatomy of a ‘.drone’ file" href="dronefile.html" />
+    <link rel="prev" title="How to connect to the simulated drone" href="connectdrone.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Take off and hints, drone by drone</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#anafi-bebop-and-bebop2">Anafi, Bebop and Bebop2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#disco">Disco</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#faking-anafi-s-sd-card">Faking ANAFI’s SD card</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-front-camera">Using the front camera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bebop-2-power">Bebop 2 Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minidrones">Minidrones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sequoia-accessory">Sequoia accessory</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced topics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Take off and hints, drone by drone</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="take-off-and-hints-drone-by-drone">
+<h1>Take off and hints, drone by drone<a class="headerlink" href="#take-off-and-hints-drone-by-drone" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="anafi-bebop-and-bebop2">
+<h2>Anafi, Bebop and Bebop2<a class="headerlink" href="#anafi-bebop-and-bebop2" title="Permalink to this headline">¶</a></h2>
+</div>
+<p>These drones are controlled via a WiFi link (or via a virtual ethernet
+link) so you probably want to provide a valid Wifi “stolen_interface” in your
+.drone file. If you don’t need to control the drone via Wifi, you can comment
+the “stolen_interface” parameter in the .drone file and the drone will not
+create its usual Wifi access point. See <a class="reference internal" href="connectdrone.html"><span class="doc">How to connect to the simulated drone</span></a> for more
+information on how to connect to a drone via a Wifi link.</p>
+<p>Once connected to your drone with a controller (e.g. FreeFlight 6), send
+the take off command to the drone and it should take off and go in hovering mode
+waiting for further instructions from the controller.</p>
+<div class="section" id="disco">
+<h2>Disco<a class="headerlink" href="#disco" title="Permalink to this headline">¶</a></h2>
+<p>The Disco requires a <strong>Skycontroller 2</strong> as a Wifi controller and a valid
+“stolen_interface” parameter in the .drone file. See <a class="reference internal" href="connectdrone.html"><span class="doc">How to connect to the simulated drone</span></a> for
+more information on how to connect to a Skycontroller 2 via Wifi.</p>
+<p>To take off, the drone must be shaked and tossed into the air. In order to do
+that, you must send a <cite>start</cite> <em>action</em> to the <cite>handling</cite> Parrot-Sphinx plugin
+identified as <code class="docutils literal notranslate"><span class="pre">disco/fixedwings_shake/handling</span></code>. This can be achieved either
+from the Web interface, or by sending an action request to the JSON-RPC server:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">echo</span> <span class="s1">&#39;{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;TriggerAction&quot;,\</span>
+<span class="s1">  &quot;params&quot;: {&quot;machine&quot;:&quot;disco&quot;, &quot;object&quot;:&quot;fixedwings_shake/handling&quot;, &quot;action&quot;:&quot;start&quot;}, &quot;id&quot;: 1}&#39;</span><span class="se">\</span>
+  <span class="p">|</span> curl -d @- http://localhost:8383 <span class="p">|</span> python -m json.tool
+</pre></div>
+</div>
+<p>Once connected to your drone with the Skycontroller 2, send a “shake” command to
+Parrot-Sphinx followed by a take off command to the drone. The Disco should be lifted
+up and shaked by Parrot-Sphinx. After the drone has received the take off command
+the propeller should start spinning and the drone should immediatly take off and
+go in loiter mode at a predefined altitude. When the Disco reaches its loiter
+altitude it should respond to the commands of the Skycontroller 2.</p>
+</div>
+<div class="section" id="faking-anafi-s-sd-card">
+<h2>Faking ANAFI’s SD card<a class="headerlink" href="#faking-anafi-s-sd-card" title="Permalink to this headline">¶</a></h2>
+<p>Anafi allows the user to insert an SD card, amongst other things, to record
+photos and videos. With Parrot-Sphinx, it is possible to simulate the presence or
+the absence of SD card. This is done using an USB mass storage device
+directly plugged into the host machine.</p>
+<p><em>Warning: once the simulated firmware takes control over the mass storage
+device, it acts exactly like with the regular SD card. So it can fill the
+memory space, remove files, and even totally format the device.</em></p>
+<p><strong>Important</strong>: for this feature to be functional, the host system shall not
+(auto)mount the USB device. For Gnome sessions, the following command may
+help:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> dbus-launch dconf write /org/gnome/desktop/media-handling/automount <span class="nb">false</span>
+</pre></div>
+</div>
+<p>Once plugged in, identify the serial number of the USB device using for example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> lsusb
+<span class="go">.... identify the vendor ID and product ID related to the device.</span>
+<span class="gp">$</span> sudo lsusb -v -d &lt;VID&gt;:&lt;PID&gt; <span class="p">|</span> grep iSerial
+</pre></div>
+</div>
+<p>Then in Parrot-Sphinx’s command line, specify the <em>machine_param</em> <code class="docutils literal notranslate"><span class="pre">sdcard_serial</span></code>
+to the .drone file. For example,</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx anafi4k.drone::sdcard_serial<span class="o">=</span>070B34EB8129CC17 outdoor_2.world
+</pre></div>
+</div>
+<p>Once the simulation gets started, the USB storage should be automatically
+detected and the drone firmware should start reading/writing into it.</p>
+</div>
+<div class="section" id="using-the-front-camera">
+<h2>Using the front camera<a class="headerlink" href="#using-the-front-camera" title="Permalink to this headline">¶</a></h2>
+<p>Most of the drones have an optional front camera that is used for recording and
+for live streaming to the controller. <strong>This camera is activated by default in
+the examples installed with Parrot-Sphinx.</strong> To disable the front camera, set the
+<cite>with_front_cam</cite> option to 0. The front camera activation requires a
+high-end GPU (see <a class="reference internal" href="system-requirements.html"><span class="doc">System requirements</span></a>) so you might want to disable
+it if your system has an integrated or low-end GPU. <strong>The drone firmware might
+not even run if the camera is enabled on a low-end GPU.</strong></p>
+<p>To enable/disable the front camera, check and modify your .drone file or
+override the parameter from the command line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::with_front_cam<span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<p>With low-end GPU, you might try to use the <cite>low_gpu</cite> option set to 1. This
+option decreases the front camera rendering quality. Hopefully, this will be
+enough to run the simulation with the front camera enabled on your system.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::with_front_cam<span class="o">=</span><span class="m">1</span>::low_gpu<span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="dronefile.html"><span class="doc">Anatomy of a ‘.drone’ file</span></a> for more information on the .drone files and on how to
+set the drone parameters.</p>
+</div>
+<div class="section" id="bebop-2-power">
+<h2>Bebop 2 Power<a class="headerlink" href="#bebop-2-power" title="Permalink to this headline">¶</a></h2>
+<p>To simulate a Bebop 2 Power, just launch a Bebop 2 simulation as usual and set
+the <cite>with_hd_battery</cite> option to 1. For example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/bebop2.drone::with_hd_battery<span class="o">=</span><span class="m">1</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="minidrones">
+<h2>Minidrones<a class="headerlink" href="#minidrones" title="Permalink to this headline">¶</a></h2>
+<p>Minidrones (Airborne, Mambo and Swing) only accept to be connected via a
+Bluetooth link. You must provide a valid Bluetooth MAC address (the one of
+your Bluetooth hardware) in the “stolen_bdaddr” option in your .drone file.
+You can also override this drone parameter from the command line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/mambo.drone::stolen_bdaddr<span class="o">=</span><span class="m">00</span>:1A:7D:DA:71:11
+</pre></div>
+</div>
+<p>The Bluetooth device associated with this MAC address will be used by the
+minidrone to communicate with its controller. See <a class="reference internal" href="connectdrone.html"><span class="doc">How to connect to the simulated drone</span></a> for more
+information on Bluetooth requirements.</p>
+<p>Once connected to your drone with a controller (e.g. FreeFlight Mini), send
+the take off command to the drone and it should take off and go in hovering mode
+waiting for further instructions from the controller.</p>
+</div>
+<div class="section" id="sequoia-accessory">
+<h2>Sequoia accessory<a class="headerlink" href="#sequoia-accessory" title="Permalink to this headline">¶</a></h2>
+<p>Through USB it is possible to connect a physical Sequoia camera
+to a simulated “SQ” drone.</p>
+<p>Several drone models support Sequoia in
+<a class="reference external" href="https://en.wikipedia.org/wiki/Hardware-in-the-loop_simulation">Hardware-In-the-Loop</a>
+mode:</p>
+<ul class="simple">
+<li><p>Disco</p></li>
+<li><p>Bluegrass</p></li>
+</ul>
+<div class="section" id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<p>1. make sure your simulated drone has a “eth0” wifi interface. You may need to
+edit the <em>&lt;stolen_interface&gt;</em> element from your .drone file
+(see <a class="reference internal" href="dronefile.html"><span class="doc">Anatomy of a ‘.drone’ file</span></a>)</p>
+<ol class="arabic simple" start="2">
+<li><p>disable the automount of usb devices:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install dconf-cli
+<span class="gp">$</span> dconf write /org/gnome/desktop/media-handling/automount <span class="nb">false</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>When your simulated SQ drone is running, plug a sequoia to an available USB port
+on your host, the simulated SQ drone should detect it and be able to use it.</p>
+<p>From your host you should also be able to access the sequoia http server
+at 10.202.0.2 .</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dronefile.html" class="btn btn-neutral float-right" title="Anatomy of a ‘.drone’ file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="connectdrone.html" class="btn btn-neutral float-left" title="How to connect to the simulated drone" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

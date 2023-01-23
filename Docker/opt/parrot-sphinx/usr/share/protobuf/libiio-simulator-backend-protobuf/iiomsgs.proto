@@ -1,0 +1,238 @@
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package iio;
+
+message ReqHelp
+{
+}
+
+message RspHelp
+{
+    required string helptxt = 1;
+}
+
+message ReqVersion
+{
+}
+
+message RspVersion
+{
+    required int32 major = 1;
+    required int32 minor = 2;
+    required string tag = 3;
+}
+
+message ReqContext
+{
+}
+
+message RspContext
+{
+    required string xml = 1;
+}
+
+message ReqSetTimeout
+{
+    required int32 ms = 1;
+}
+
+message RspSetTimeout
+{
+    required int32 result = 1;
+}
+
+message ReqOpen
+{
+    required string device = 1;
+    required uint32 nframes = 2;
+    required string mask = 3;
+    required bool cyclic = 4;
+}
+
+message RspOpen
+{
+    required int32 result = 1;
+}
+
+message ReqClose
+{
+    required string device = 1;
+}
+message RspClose
+{
+    required int32 result = 1;
+}
+
+message ReqReadAttr
+{
+    message ChannelDef
+    {
+        required string name = 1;
+        required bool input = 2;
+    }
+    required string device = 1;
+    optional ChannelDef channel = 3;
+    optional string attribute = 2;
+}
+
+
+message RspReadAttr
+{
+    message AttributeValue
+    {
+        required string name = 1;
+        required bytes value = 2;
+    }
+    required int32 result = 1;
+    repeated AttributeValue values = 2;
+}
+
+message ReqReadBuf
+{
+    required string device = 1;
+    required uint32 nbbytes = 2;
+    required bool blocking = 3;
+}
+
+message RspReadBuf
+{
+    required int32 result = 1;
+    optional string mask = 2;
+    optional bytes buffer = 3;
+}
+
+message ReqWriteBuf
+{
+    required string device = 1;
+    required bytes buffer = 2;
+}
+message RspWriteBuf
+{
+    required int32 result = 1;
+}
+
+message ReqWriteAttr
+{
+    message ChannelDef
+    {
+        required string name = 1;
+        required bool input = 2;
+    }
+    message AttributeValue
+    {
+        required string name = 1;
+        required bytes value = 2;
+    }
+    required string device = 1;
+    optional ChannelDef channel = 2;
+    required AttributeValue attribute = 3;
+}
+
+
+message RspWriteAttr
+{
+    required int32 result = 1;
+}
+
+message ReqSetTrigger
+{
+    required string device = 1;
+    required string trigger = 2;  // can be an empty string to reset trigger
+}
+
+message RspSetTrigger
+{
+    required int32 result = 1;
+}
+
+message ReqGetTrigger
+{
+    required string device = 1;
+}
+
+message RspGetTrigger
+{
+    required int32 result = 1;
+    optional string trigger = 2;  // empty string if no trigger
+}
+
+message ReqExit
+{
+}
+
+message RspExit
+{
+    required int32 result = 1;
+}
+
+// From libiio's backend to sphinx
+message Request
+{
+    enum Type
+    {
+        HELP = 1;
+        VERSION = 2;
+        CONTEXT = 3;
+        TIMEOUT = 4;
+        OPEN = 5;
+        CLOSE = 6;
+        READATTR = 7;
+        READBUF = 8;
+        WRITEBUF = 9;
+        WRITEATTR = 10;
+        SETTRIG = 11;
+        GETTRIG = 12;
+        EXIT = 13;
+    }
+    required Type type = 1;
+    optional ReqHelp help = 2;
+    optional ReqVersion version = 3;
+    optional ReqContext context = 4;
+    optional ReqSetTimeout timeout = 5;
+    optional ReqOpen open = 6;
+    optional ReqClose close = 7;
+    optional ReqReadAttr readattr = 8;
+    optional ReqReadBuf readbuf = 9;
+    optional ReqWriteBuf writebuf = 10;
+    optional ReqWriteAttr writeattr = 11;
+    optional ReqSetTrigger settrig = 12;
+    optional ReqGetTrigger gettrig = 13;
+    optional ReqExit exit = 14;
+}
+// From sphinx to libiio's backend
+message Response
+{
+    enum Type
+    {
+        HELP = 1;
+        VERSION = 2;
+        CONTEXT = 3;
+        TIMEOUT = 4;
+        OPEN = 5;
+        CLOSE = 6;
+        READATTR = 7;
+        READBUF = 8;
+        WRITEBUF = 9;
+        WRITEATTR = 10;
+        SETTRIG = 11;
+        GETTRIG = 12;
+        EXIT = 13;
+    }
+    required Type type = 1;
+    optional string device = 2;
+    optional RspHelp help = 3;
+    optional RspVersion version = 4;
+    optional RspContext context = 5;
+    optional RspSetTimeout timeout = 6;
+    optional RspOpen open = 7;
+    optional RspClose close = 8;
+    optional RspReadAttr readattr = 9;
+    optional RspReadBuf readbuf = 10;
+    optional RspWriteBuf writebuf = 11;
+    optional RspWriteAttr writeattr = 12;
+    optional RspSetTrigger settrig = 13;
+    optional RspGetTrigger gettrig = 14;
+    optional RspExit exit = 15;
+}
+

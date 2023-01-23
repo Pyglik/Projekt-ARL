@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+if [ -n "$1" ]; then
+	device=$1
+else
+	device=$(adb get-serialno)
+fi
+
+sphinx_bin_dir="$(cd "$(dirname "$0")"; pwd -P)"
+sphinx_usr_dir=$(dirname $sphinx_bin_dir)
+
+. "$sphinx_bin_dir/sphinx-conf"
+env|grep "\bSPHINX_" > /tmp/sphinx.env
+adb -s "$device" push /tmp/sphinx.env /tmp/sphinx.env
+adb -s "$device" push "$sphinx_bin_dir"/sphinx-wifi-bridge-payload.sh /tmp/sphinx-wifi-bridge-payload.sh
+adb -s "$device" push "$sphinx_usr_dir"/share/sphinx/wifi/wifi_manual.cfg /data/lib/libshsettings/wifi.cfg
+adb -s "$device" shell sprop persist.user.usb_mode rndis
+adb -s "$device" wait-for-device
+adb -s "$device" shell "sh /tmp/sphinx-wifi-bridge-payload.sh"

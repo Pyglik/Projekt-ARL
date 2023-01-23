@@ -1,0 +1,8 @@
+prefix=/home/bebop2/catkin_ws/devel/.private/g2rr
+
+Name: g2rr
+Description: Description of g2rr
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

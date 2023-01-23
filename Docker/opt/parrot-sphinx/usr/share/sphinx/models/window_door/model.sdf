@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+  <model name="window2">
+    <pose>-0.12 -1.66 0 0 -0 0</pose>
+    <link name="Wall_0">
+      <pose>-0 0 0 0 -0 0</pose>
+      <visual name="Wall_0_Visual_0">
+        <pose>-3.2425 0 1.75 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>5.265 0.15 3.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://window_door/materials/scripts</uri>
+            <uri>model://window_door/materials/textures</uri>
+            <name>Wall/NiceWall</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+      <collision name="Wall_0_Collision_0">
+        <geometry>
+          <box>
+            <size>5.265 0.15 3.5</size>
+          </box>
+        </geometry>
+        <pose>-3.2425 0 1.75 0 -0 0</pose>
+      </collision>
+      <visual name="Wall_0_Visual_1">
+        <pose>2.6325 0 0.6 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>6.485 0.15 1.2</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://window_door/materials/scripts</uri>
+            <uri>model://window_door/materials/textures</uri>
+            <name>Wall/NiceWall</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+      <collision name="Wall_0_Collision_1">
+        <geometry>
+          <box>
+            <size>6.485 0.15 1.2</size>
+          </box>
+        </geometry>
+        <pose>2.6325 0 0.6 0 -0 0</pose>
+      </collision>
+      <visual name="Wall_0_Visual_2">
+        <pose>3.2325 0 2.35 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>5.285 0.15 2.3</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://window_door/materials/scripts</uri>
+            <uri>model://window_door/materials/textures</uri>
+            <name>Wall/NiceWall</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+      <collision name="Wall_0_Collision_2">
+        <geometry>
+          <box>
+            <size>5.285 0.15 2.3</size>
+          </box>
+        </geometry>
+        <pose>3.2325 0 2.35 0 -0 0</pose>
+      </collision>
+      <visual name="Wall_0_Visual_3">
+        <pose>-0.01 0 2.95 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>1.2 0.15 1.1</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://window_door/materials/scripts</uri>
+            <uri>model://window_door/materials/textures</uri>
+            <name>Wall/NiceWall</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+      <collision name="Wall_0_Collision_3">
+        <geometry>
+          <box>
+            <size>1.2 0.15 1.1</size>
+          </box>
+        </geometry>
+        <pose>-0.01 0 2.95 0 -0 0</pose>
+      </collision>
+    </link>
+    <static>1</static>
+  </model>
+</sdf>

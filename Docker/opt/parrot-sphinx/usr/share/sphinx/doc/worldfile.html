@@ -1,0 +1,465 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Anatomy of a ‘.world’ file &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to watch flight information" href="visualization.html" />
+    <link rel="prev" title="Anatomy of a ‘.drone’ file" href="dronefile.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Anatomy of a ‘.world’ file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-code-explained">The code explained</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-spaw-drones-into-the-world">How to spaw drones into the world</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced topics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Anatomy of a ‘.world’ file</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="anatomy-of-a-world-file">
+<h1>Anatomy of a ‘.world’ file<a class="headerlink" href="#anatomy-of-a-world-file" title="Permalink to this headline">¶</a></h1>
+<p>As Sphinx heavily relies on <a class="reference external" href="http://gazebosim.org">Gazebo</a>, it accepts as
+argument a path to a .world file. So, to launch a Sphinx simulation on an
+existing world, you can type:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx &lt;path/to/my.world&gt; &lt;path/to/my.drone&gt;
+</pre></div>
+</div>
+<p>The .world file comprises directly or indirectly the elements of the scene. It
+complies with the specification provided by sdformat.org
+(<a class="reference external" href="http://sdformat.org/spec?ver=1.6&amp;elem=world">here</a>). Let’s take an example
+and go through it into details. This documentation does not aim to be
+exhaustive, but rather describes the most interesting aspects from the drone
+simulation perspective.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+<span class="nt">&lt;sdf</span> <span class="na">version=</span><span class="s">&quot;1.5&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;world</span> <span class="na">name=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;gui&gt;</span>
+      <span class="nt">&lt;camera</span> <span class="na">name=</span><span class="s">&quot;user_camera&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;pose&gt;</span>-8.89 -14.33 12.97 0.0 0.58 0.84<span class="nt">&lt;/pose&gt;</span>
+        <span class="nt">&lt;track_visual&gt;</span>
+          <span class="nt">&lt;static&gt;</span>true<span class="nt">&lt;/static&gt;</span>
+          <span class="nt">&lt;use_model_frame&gt;</span>true<span class="nt">&lt;/use_model_frame&gt;</span>
+          <span class="nt">&lt;xyz&gt;</span>-3 0 1<span class="nt">&lt;/xyz&gt;</span>
+          <span class="nt">&lt;inherit_yaw&gt;</span>true<span class="nt">&lt;/inherit_yaw&gt;</span>
+        <span class="nt">&lt;/track_visual&gt;</span>
+      <span class="nt">&lt;/camera&gt;</span>
+    <span class="nt">&lt;/gui&gt;</span>
+
+    <span class="nt">&lt;spherical_coordinates&gt;</span>
+      <span class="nt">&lt;latitude_deg&gt;</span>48.878922<span class="nt">&lt;/latitude_deg&gt;</span>
+      <span class="nt">&lt;longitude_deg&gt;</span>2.367782<span class="nt">&lt;/longitude_deg&gt;</span>
+    <span class="nt">&lt;/spherical_coordinates&gt;</span>
+
+    <span class="nt">&lt;physics</span> <span class="na">type=</span><span class="s">&quot;ode&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;real_time_update_rate&gt;</span>1000<span class="nt">&lt;/real_time_update_rate&gt;</span>
+      <span class="nt">&lt;max_step_size&gt;</span>0.001<span class="nt">&lt;/max_step_size&gt;</span>
+      <span class="nt">&lt;real_time_factor&gt;</span>1.0<span class="nt">&lt;/real_time_factor&gt;</span>
+      <span class="nt">&lt;max_contacts&gt;</span>20<span class="nt">&lt;/max_contacts&gt;</span>
+      <span class="nt">&lt;gravity&gt;</span>0 0 -9.81<span class="nt">&lt;/gravity&gt;</span>
+      <span class="nt">&lt;magnetic_field&gt;</span>0.1062e-6 20.8038e-6 -43.2881e-6<span class="nt">&lt;/magnetic_field&gt;</span>
+      <span class="nt">&lt;ode&gt;</span>
+        <span class="nt">&lt;solver&gt;</span>
+          <span class="nt">&lt;type&gt;</span>world<span class="nt">&lt;/type&gt;</span>
+          <span class="nt">&lt;min_step_size&gt;</span>0.0001<span class="nt">&lt;/min_step_size&gt;</span>
+          <span class="nt">&lt;iters&gt;</span>50<span class="nt">&lt;/iters&gt;</span>
+          <span class="nt">&lt;precon_iters&gt;</span>0<span class="nt">&lt;/precon_iters&gt;</span>
+          <span class="nt">&lt;sor&gt;</span>1.4<span class="nt">&lt;/sor&gt;</span>
+          <span class="nt">&lt;use_dynamic_moi_rescaling&gt;</span>1<span class="nt">&lt;/use_dynamic_moi_rescaling&gt;</span>
+        <span class="nt">&lt;/solver&gt;</span>
+        <span class="nt">&lt;constraints&gt;</span>
+          <span class="nt">&lt;cfm&gt;</span>0<span class="nt">&lt;/cfm&gt;</span>
+          <span class="nt">&lt;erp&gt;</span>0.2<span class="nt">&lt;/erp&gt;</span>
+          <span class="nt">&lt;contact_max_correcting_vel&gt;</span>100.0<span class="nt">&lt;/contact_max_correcting_vel&gt;</span>
+          <span class="nt">&lt;contact_surface_layer&gt;</span>0.001<span class="nt">&lt;/contact_surface_layer&gt;</span>
+        <span class="nt">&lt;/constraints&gt;</span>
+      <span class="nt">&lt;/ode&gt;</span>
+    <span class="nt">&lt;/physics&gt;</span>
+
+    <span class="nt">&lt;atmosphere</span> <span class="na">type=</span><span class="s">&quot;adiabatic&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;temperature&gt;</span>298.15<span class="nt">&lt;/temperature&gt;</span>
+      <span class="nt">&lt;pressure&gt;</span>101325<span class="nt">&lt;/pressure&gt;</span>
+      <span class="nt">&lt;temperature_gradient&gt;</span>-0.0065<span class="nt">&lt;/temperature_gradient&gt;</span>
+    <span class="nt">&lt;/atmosphere&gt;</span>
+
+    <span class="nt">&lt;plugin</span> <span class="na">name=</span><span class="s">&quot;fwman&quot;</span> <span class="na">filename=</span><span class="s">&quot;libsphinx_fwman.so&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;spawn_point</span> <span class="na">name=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;pose&gt;</span>0 0 0.2 0 0 0<span class="nt">&lt;/pose&gt;</span>
+      <span class="nt">&lt;/spawn_point&gt;</span>
+      <span class="nt">&lt;spawn_point</span> <span class="na">name=</span><span class="s">&quot;5_meters_forward&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;pose&gt;</span>5 0 0.2 0 0 0<span class="nt">&lt;/pose&gt;</span>
+      <span class="nt">&lt;/spawn_point&gt;</span>
+    <span class="nt">&lt;/plugin&gt;</span>
+
+    <span class="nt">&lt;include&gt;</span>
+      <span class="nt">&lt;uri&gt;</span>model://sun<span class="nt">&lt;/uri&gt;</span>
+    <span class="nt">&lt;/include&gt;</span>
+    <span class="nt">&lt;include&gt;</span>
+      <span class="nt">&lt;uri&gt;</span>model://grass_plane<span class="nt">&lt;/uri&gt;</span>
+    <span class="nt">&lt;/include&gt;</span>
+
+  <span class="nt">&lt;/world&gt;</span>
+<span class="nt">&lt;/sdf&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="the-code-explained">
+<h2>The code explained<a class="headerlink" href="#the-code-explained" title="Permalink to this headline">¶</a></h2>
+<p>Each world file is encapsulated by a <em>&lt;world&gt;</em> tag.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+<span class="nt">&lt;sdf</span> <span class="na">version=</span><span class="s">&quot;1.5&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;world</span> <span class="na">name=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+<p>The optional <em>&lt;gui&gt;</em> tag sets the GUI parameters used by sphinx-client.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;gui&gt;</span>
+  <span class="nt">&lt;camera</span> <span class="na">name=</span><span class="s">&quot;user_camera&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+<p>The initial pose of the user camera is given by the line below. All so-called
+poses are expressed as [x, y, z, phi, theta, psi] in meters for distances and
+radians for angles.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;pose&gt;</span>-8.89 -14.33 12.97 0.0 0.58 0.84<span class="nt">&lt;/pose&gt;</span>
+</pre></div>
+</div>
+<p>The <em>&lt;track_visual&gt;</em> tag can be used to track a drone from startup with the
+user camera by adding a <em>&lt;name&gt;</em> tag set with the drone name.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>    <span class="nt">&lt;track_visual&gt;</span>
+      <span class="nt">&lt;static&gt;</span>true<span class="nt">&lt;/static&gt;</span>
+      <span class="nt">&lt;use_model_frame&gt;</span>true<span class="nt">&lt;/use_model_frame&gt;</span>
+      <span class="nt">&lt;xyz&gt;</span>-3 0 1<span class="nt">&lt;/xyz&gt;</span>
+      <span class="nt">&lt;inherit_yaw&gt;</span>true<span class="nt">&lt;/inherit_yaw&gt;</span>
+    <span class="nt">&lt;/track_visual&gt;</span>
+  <span class="nt">&lt;/camera&gt;</span>
+<span class="nt">&lt;/gui&gt;</span>
+</pre></div>
+</div>
+<p>These GPS coordinates correspond to the point [0 0 0] of the scene. By default,
+we use the Parrot Headquarter coordinates.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;spherical_coordinates&gt;</span>
+  <span class="nt">&lt;latitude_deg&gt;</span>48.878922<span class="nt">&lt;/latitude_deg&gt;</span>
+  <span class="nt">&lt;longitude_deg&gt;</span>2.367782<span class="nt">&lt;/longitude_deg&gt;</span>
+<span class="nt">&lt;/spherical_coordinates&gt;</span>
+</pre></div>
+</div>
+<p>The magnetic field was calculated using the 2015 World Magnetic Model for the
+geodetic coordinates defined in <em>&lt;spherical_coordinates&gt;</em>.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;physics</span> <span class="na">type=</span><span class="s">&quot;ode&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;real_time_update_rate&gt;</span>1000<span class="nt">&lt;/real_time_update_rate&gt;</span>
+  <span class="nt">&lt;max_step_size&gt;</span>0.001<span class="nt">&lt;/max_step_size&gt;</span>
+  <span class="nt">&lt;real_time_factor&gt;</span>1.0<span class="nt">&lt;/real_time_factor&gt;</span>
+  <span class="nt">&lt;max_contacts&gt;</span>20<span class="nt">&lt;/max_contacts&gt;</span>
+  <span class="nt">&lt;gravity&gt;</span>0 0 -9.81<span class="nt">&lt;/gravity&gt;</span>
+  <span class="nt">&lt;magnetic_field&gt;</span>0.1062e-6 20.8038e-6 -43.2881e-6<span class="nt">&lt;/magnetic_field&gt;</span>
+</pre></div>
+</div>
+<p>ODE is the physics engine used by Gazebo. The values below are suited for a
+drone simulation. Change them at your own risk!</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>  <span class="nt">&lt;ode&gt;</span>
+    <span class="nt">&lt;solver&gt;</span>
+      <span class="nt">&lt;type&gt;</span>world<span class="nt">&lt;/type&gt;</span>
+      <span class="nt">&lt;min_step_size&gt;</span>0.0001<span class="nt">&lt;/min_step_size&gt;</span>
+      <span class="nt">&lt;iters&gt;</span>50<span class="nt">&lt;/iters&gt;</span>
+      <span class="nt">&lt;precon_iters&gt;</span>0<span class="nt">&lt;/precon_iters&gt;</span>
+      <span class="nt">&lt;sor&gt;</span>1.4<span class="nt">&lt;/sor&gt;</span>
+      <span class="nt">&lt;use_dynamic_moi_rescaling&gt;</span>1<span class="nt">&lt;/use_dynamic_moi_rescaling&gt;</span>
+    <span class="nt">&lt;/solver&gt;</span>
+    <span class="nt">&lt;constraints&gt;</span>
+      <span class="nt">&lt;cfm&gt;</span>0<span class="nt">&lt;/cfm&gt;</span>
+      <span class="nt">&lt;erp&gt;</span>0.2<span class="nt">&lt;/erp&gt;</span>
+      <span class="nt">&lt;contact_max_correcting_vel&gt;</span>100.0<span class="nt">&lt;/contact_max_correcting_vel&gt;</span>
+      <span class="nt">&lt;contact_surface_layer&gt;</span>0.001<span class="nt">&lt;/contact_surface_layer&gt;</span>
+    <span class="nt">&lt;/constraints&gt;</span>
+  <span class="nt">&lt;/ode&gt;</span>
+<span class="nt">&lt;/physics&gt;</span>
+</pre></div>
+</div>
+<p>The <em>&lt;atmosphere&gt;</em> tag specifies the type and properties of the atmosphere
+model. The adiabatic atmosphere model is based on the troposphere model in the
+Manual of the
+<a class="reference external" href="http://ntrs.nasa.gov/search.jsp?R=19930083952">ICAO Standard Atmosphere</a>.
+This model assumes a specific composition of gases, the ideal gas law,
+hydrostatic equilibrium, and constant gradients of gravity and temperature with
+respect to altitude.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;atmosphere</span> <span class="na">type=</span><span class="s">&quot;adiabatic&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;temperature&gt;</span>298.15<span class="nt">&lt;/temperature&gt;</span>
+  <span class="nt">&lt;pressure&gt;</span>101325<span class="nt">&lt;/pressure&gt;</span>
+  <span class="nt">&lt;temperature_gradient&gt;</span>-0.0065<span class="nt">&lt;/temperature_gradient&gt;</span>
+<span class="nt">&lt;/atmosphere&gt;</span>
+</pre></div>
+</div>
+<p>The <em>&lt;plugin&gt;</em> <code class="docutils literal notranslate"><span class="pre">fwman</span></code> controls the drones’ lifecycle. It may contain a list
+of spawn points which describe a starting pose in world coordinates for the
+drones.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;plugin</span> <span class="na">name=</span><span class="s">&quot;fwman&quot;</span> <span class="na">filename=</span><span class="s">&quot;libsphinx_fwman.so&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;spawn_point</span> <span class="na">name=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;pose&gt;</span>0 0 0.2 0 0 0<span class="nt">&lt;/pose&gt;</span>
+  <span class="nt">&lt;/spawn_point&gt;</span>
+  <span class="nt">&lt;spawn_point</span> <span class="na">name=</span><span class="s">&quot;5_meters_forward&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;pose&gt;</span>5 0 0.2 0 0 0<span class="nt">&lt;/pose&gt;</span>
+  <span class="nt">&lt;/spawn_point&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</pre></div>
+</div>
+<p>By default, all drones start at the “default” location. To start at a different
+location, one would have to specify the name of the spawn point in the command
+line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx &lt;path/to/my.world&gt; &lt;path/to/my.drone&gt;::pose<span class="o">=</span>5_meters_forward
+</pre></div>
+</div>
+<p>All the other objects belonging to the scene are listed below.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span>    <span class="nt">&lt;include&gt;</span>
+      <span class="nt">&lt;uri&gt;</span>model://sun<span class="nt">&lt;/uri&gt;</span>
+    <span class="nt">&lt;/include&gt;</span>
+    <span class="nt">&lt;include&gt;</span>
+      <span class="nt">&lt;uri&gt;</span>model://grass_plane<span class="nt">&lt;/uri&gt;</span>
+    <span class="nt">&lt;/include&gt;</span>
+
+  <span class="nt">&lt;/world&gt;</span>
+<span class="nt">&lt;/sdf&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-to-spaw-drones-into-the-world">
+<h2>How to spaw drones into the world<a class="headerlink" href="#how-to-spaw-drones-into-the-world" title="Permalink to this headline">¶</a></h2>
+<p>It is recommended to spawn drones into the world by giving a .drone file
+(<a class="reference internal" href="dronefile.html"><span class="doc">Anatomy of a ‘.drone’ file</span></a>) on the command line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx &lt;path/to/my.world&gt; &lt;path/to/my.drone&gt;
+</pre></div>
+</div>
+<p>Another way to spawn drones into the world is to insert an optional gazebo
+<em>&lt;plugin&gt;</em> <code class="docutils literal notranslate"><span class="pre">fwman</span></code> in your .world file. It may contain one or more <em>&lt;drone&gt;</em>
+tags whose content obey the same rules as <em>&lt;drone&gt;</em> tags in .drone files. Below
+is a working example:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;world&gt;</span>
+...
+<span class="nt">&lt;plugin</span> <span class="na">name=</span><span class="s">&quot;fwman&quot;</span> <span class="na">filename=</span><span class="s">&quot;libsphinx_fwman.so&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;drone</span>
+    <span class="na">name=</span><span class="s">&quot;anafi4k&quot;</span>
+    <span class="na">firmware=</span><span class="s">&quot;http://plf.parrot.com/sphinx/firmwares/anafi/pc/latest/images/anafi-pc.ext2.zip&quot;</span>
+    <span class="na">hardware=</span><span class="s">&quot;anafi4k&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;machine_params</span>
+      <span class="na">low_gpu=</span><span class="s">&quot;0&quot;</span>
+      <span class="na">with_front_cam=</span><span class="s">&quot;1&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;interface&gt;</span>eth1<span class="nt">&lt;/interface&gt;</span>
+    <span class="nt">&lt;stolen_bdaddr&gt;</span>00:00:00:00:00:00<span class="nt">&lt;/stolen_bdaddr&gt;</span>
+  <span class="nt">&lt;/drone&gt;</span>
+  <span class="nt">&lt;spawn_point</span> <span class="na">name=</span><span class="s">&quot;default&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;pose&gt;</span>0 0 0.2 0 0 0<span class="nt">&lt;/pose&gt;</span>
+  <span class="nt">&lt;/spawn_point&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+...
+<span class="nt">&lt;/world&gt;</span>
+</pre></div>
+</div>
+<p>For more information about the properties used in <em>&lt;drone&gt;</em>, see
+<a class="reference internal" href="dronefile.html"><span class="doc">Anatomy of a ‘.drone’ file</span></a>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="visualization.html" class="btn btn-neutral float-right" title="How to watch flight information" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dronefile.html" class="btn btn-neutral float-left" title="Anatomy of a ‘.drone’ file" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

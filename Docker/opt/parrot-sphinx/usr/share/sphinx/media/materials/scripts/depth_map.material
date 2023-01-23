@@ -1,0 +1,41 @@
+vertex_program Sphinx/DepthMapVS glsl
+{
+  source ../programs/GLSL/depth_map_vs.glsl
+
+  default_params
+  {
+    param_named_auto texelOffsets texel_offsets
+  }
+}
+
+fragment_program Sphinx/DepthMapFS glsl
+{
+  source ../programs/GLSL/depth_map_fs.glsl
+
+  default_params
+  {
+    param_named_auto viewportSize viewport_size
+    param_named_auto farClipDistance far_clip_distance
+
+    param_named noise_offsets float3 0.0 0.0 0.0
+    param_named noise_mean float 0.0
+    param_named noise_stddev float 0.0
+    param_named coef float 50.0
+    param_named maxdisp float 128.0
+    param_named visualtex int 0
+    param_named invalidpx_rate float 0.001
+    param_named invalidpx_color float3 1.0 0.0 0.0
+  }
+}
+
+material Sphinx/DepthMap
+{
+  technique
+  {
+    pass
+    {
+      vertex_program_ref Sphinx/DepthMapVS { }
+      fragment_program_ref Sphinx/DepthMapFS { }
+    }
+  }
+}

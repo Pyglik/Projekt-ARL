@@ -1,0 +1,361 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tuning of drone internals at runtime - interfaces &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tuning of drone internals at runtime - Howtos" href="pluginctrl_howtos.html" />
+    <link rel="prev" title="How to watch flight information" href="visualization.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tuning of drone internals at runtime - interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#web-interface">Web interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line">Command line</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#available-methods">Available methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing-with-command-line">Testing with command line</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced topics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tuning of drone internals at runtime - interfaces</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tuning-of-drone-internals-at-runtime-interfaces">
+<h1>Tuning of drone internals at runtime - interfaces<a class="headerlink" href="#tuning-of-drone-internals-at-runtime-interfaces" title="Permalink to this headline">¶</a></h1>
+<p>An important feature of Parrot-Sphinx is the control of the behaviour of simulated
+drone’s hardware/physical components. What we call here “components” is
+typically the drone sensors, the propulsion group(s), or the aerodynamic model.
+For example, if you need to test your application with a drone that has no GPS
+signal, you just need to deactivate the GPS component for the desired duration.</p>
+<p>Two interfaces are available to control the components:</p>
+<ul class="simple">
+<li><p><em>Web interface</em>: the most convenient in case of manual tests</p></li>
+<li><p><em>Command line</em>: more appropriate to automatize sequences</p></li>
+</ul>
+<p>The current page describes in details these interfaces. If you want more
+practical information about how to fill in the tuning parameters, please
+refer to the page <a class="reference internal" href="pluginctrl_howtos.html"><span class="doc">Tuning of drone internals at runtime - Howtos</span></a>.</p>
+<div class="section" id="web-interface">
+<h2>Web interface<a class="headerlink" href="#web-interface" title="Permalink to this headline">¶</a></h2>
+<p>Once Parrot-Sphinx is running, the web interface gets accessible.
+You just need to enter the following command to make it appear in your
+favorite web browser:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx-dashboard
+</pre></div>
+</div>
+<p>Once the page is loaded, drag and drop the inspector widget as shown in the
+video below. A window listing the components that can be controlled should
+appear.
+At start, all entries are hidden since the tree is folded. You just need to
+unfold the part that you want to change.</p>
+<p>Two types of controls are available:</p>
+<ul class="simple">
+<li><p><em>action</em>: just push on the button to execute the related action</p></li>
+<li><p><em>parameter</em>: click on the field to edit the text and enter a new value or
+click on the button to edit the parameter in a new window</p></li>
+</ul>
+<video width="560" height="315" controls>
+  <source src="_static/videos/web_inspector.mp4" type="video/mp4" />
+</video></div>
+<div class="section" id="command-line">
+<h2>Command line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h2>
+<p>The communication relies on <a class="reference external" href="https://en.wikipedia.org/wiki/JSON-RPC">JSON-RPC</a>
+(version 2.0), which runs on top of:</p>
+<ul class="simple">
+<li><p>either HTTP protocol,</p></li>
+<li><p>or Named Unix Domain Socket</p></li>
+</ul>
+<p>By default, the Parameter Server is going to listen on port <code class="docutils literal notranslate"><span class="pre">8383</span></code> (decimal)
+through an HTTP server.</p>
+<p>If the default settings are not suited, it is up to you to choose the link
+that is going to be used. Just edit the .world file as follows:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;world&gt;</span>
+...
+<span class="nt">&lt;plugin</span> <span class="na">name=</span><span class="s">&quot;fwman&quot;</span> <span class="na">filename=</span><span class="s">&quot;libsphinx_fwman.so&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;param_server&gt;</span>
+    <span class="c">&lt;!-- type of connection: &#39;http&#39; or &#39;unix&#39; --&gt;</span>
+    <span class="nt">&lt;type&gt;</span>unix<span class="nt">&lt;/type&gt;</span>
+    <span class="c">&lt;!-- path to the socket for &#39;unix&#39;, or HTTP port number (in decimal) --&gt;</span>
+    <span class="nt">&lt;info&gt;</span>/tmp/myserverparam.sock<span class="nt">&lt;/info&gt;</span>
+  <span class="nt">&lt;/param_server&gt;</span>
+...
+<span class="nt">&lt;/plugin&gt;</span>
+...
+<span class="nt">&lt;/world&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="available-methods">
+<h3>Available methods<a class="headerlink" href="#available-methods" title="Permalink to this headline">¶</a></h3>
+<p><strong>GetAllParameters</strong></p>
+<p>Method name: <code class="docutils literal notranslate"><span class="pre">GetAllParameters</span></code></p>
+<p>Parameters: None</p>
+<p>Action: returns an JSON object containing all available parameters for the
+complete running scene.</p>
+<p>The returned object is built as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="o">&lt;</span><span class="n">machine</span><span class="o">&gt;</span> <span class="p">:</span> <span class="p">{</span> <span class="n">objectid</span><span class="o">/</span><span class="nb">type</span> <span class="p">:</span> <span class="p">[</span><span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>SetParam</strong></p>
+<p>Method name: <code class="docutils literal notranslate"><span class="pre">SetParam</span></code></p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">machine</span></code>: name of the drone or module as it appears in the <code class="docutils literal notranslate"><span class="pre">drone</span></code>
+section of your .drone file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">object</span></code>: combination of “objectid/type” of the component we want to refer
+to. Example: <code class="docutils literal notranslate"><span class="pre">mpu6050/imu</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parameter</span></code>: name of the parameter we want to set.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: new value of the parameter</p></li>
+</ul>
+</div></blockquote>
+<p>Action: changes the value of one given parameter.</p>
+<p><strong>TriggerAction</strong></p>
+<p>Method name: <code class="docutils literal notranslate"><span class="pre">TriggerAction</span></code></p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">machine</span></code>: name of the drone or module as it appears in the <code class="docutils literal notranslate"><span class="pre">drone</span></code>
+section of your .drone file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">object</span></code>: combination of “objectid/type” of the component we want to refer
+to. Example: <code class="docutils literal notranslate"><span class="pre">mpu6050/imu</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">action</span></code>: name of the action we want to trigger.</p></li>
+</ul>
+</div></blockquote>
+<p>Action: sends a request to trigger an action.</p>
+</div>
+<div class="section" id="testing-with-command-line">
+<h3>Testing with command line<a class="headerlink" href="#testing-with-command-line" title="Permalink to this headline">¶</a></h3>
+<p>In case you use the default configuration (HTTP on port 8383), control the drone
+components with command lines thanks to cURL. Make sure that the field “machine”
+is set with the name given in the <code class="docutils literal notranslate"><span class="pre">drone</span></code> section of your .drone file.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">echo</span> <span class="s1">&#39;{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;GetAllParameters&quot;, &quot;params&quot;: {}, &quot;id&quot;: 1}&#39;</span> <span class="se">\</span>
+   <span class="p">|</span> curl -d @- http://localhost:8383 <span class="p">|</span> python -m json.tool
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">echo</span> <span class="s1">&#39;{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;SetParam&quot;, \</span>
+<span class="s1">  &quot;params&quot;: {&quot;machine&quot;:&quot;anafi4k&quot;, &quot;object&quot;:&quot;gps/gps&quot;, &quot;parameter&quot;:&quot;updatePeriod&quot;, &quot;value&quot;:&quot;5.0&quot;}, &quot;id&quot;: 1}&#39;</span><span class="se">\</span>
+  <span class="p">|</span> curl -d @- http://localhost:8383 <span class="p">|</span> python -m json.tool
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">echo</span> <span class="s1">&#39;{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;TriggerAction&quot;,\</span>
+<span class="s1">  &quot;params&quot;: {&quot;machine&quot;:&quot;disco&quot;, &quot;object&quot;:&quot;fixedwings_shake/handling&quot;, &quot;action&quot;:&quot;start&quot;}, &quot;id&quot;: 1}&#39;</span> <span class="se">\</span>
+  <span class="p">|</span> curl -d @- http://localhost:8383 <span class="p">|</span> python -m json.tool
+</pre></div>
+</div>
+<p>If the fwman plugin in your .world file is configured to use a Unix Socket
+connection type, replace <code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-d</span> <span class="pre">&#64;-</span> <span class="pre">http://localhost:8383</span></code> by
+<code class="docutils literal notranslate"><span class="pre">nc</span> <span class="pre">-U</span> <span class="pre">&lt;path/to/unix/socket&gt;</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pluginctrl_howtos.html" class="btn btn-neutral float-right" title="Tuning of drone internals at runtime - Howtos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="visualization.html" class="btn btn-neutral float-left" title="How to watch flight information" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

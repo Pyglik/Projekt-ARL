@@ -1,0 +1,568 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Anatomy of a ‘.drone’ file &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Anatomy of a ‘.world’ file" href="worldfile.html" />
+    <link rel="prev" title="Take off and hints, drone by drone" href="drone-requirements.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Anatomy of a ‘.drone’ file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-code-explained">The code explained</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hardware-strings">Hardware strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#path-to-the-firmware">Path to the firmware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#drone-machine-params">Drone machine_params</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced topics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Anatomy of a ‘.drone’ file</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="anatomy-of-a-drone-file">
+<h1>Anatomy of a ‘.drone’ file<a class="headerlink" href="#anatomy-of-a-drone-file" title="Permalink to this headline">¶</a></h1>
+<p>There are many ways to start Parrot-Sphinx, open worlds and spawn drones. To start an
+empty world with a single drone, simply run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx &lt;path/to/my.drone&gt;
+</pre></div>
+</div>
+<p>To start an existing world and spawn a drone into it:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx &lt;path/to/my.world&gt; &lt;path/to/my.drone&gt;
+</pre></div>
+</div>
+<p>The .drone file contains a description of the drone to be simulated in Parrot-Sphinx.
+Sample .drone files can be found in the installed version (default install)
+under:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/opt/parrot-sphinx/usr/share/sphinx/drones</span>
+</pre></div>
+</div>
+<p>Let’s take a .drone file example and detail it in the next section.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+<span class="nt">&lt;drone</span>
+  <span class="na">name=</span><span class="s">&quot;anafi4k&quot;</span>
+  <span class="na">firmware=</span><span class="s">&quot;http://plf.parrot.com/sphinx/firmwares/anafi/pc/latest/images/anafi-pc.ext2.zip&quot;</span>
+  <span class="na">hardware=</span><span class="s">&quot;anafi4k&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;machine_params</span>
+    <span class="na">with_front_cam=</span><span class="s">&quot;1&quot;</span>
+    <span class="na">simple_front_cam=</span><span class="s">&quot;1&quot;</span>
+    <span class="na">sdcard_serial=</span><span class="s">&quot;__undefined__&quot;</span>
+    <span class="na">with_gimbal=</span><span class="s">&quot;1&quot;</span>
+    <span class="na">low_gpu=</span><span class="s">&quot;0&quot;</span>
+    <span class="nt">/&gt;</span>
+  <span class="nt">&lt;pose&gt;</span>landing_area<span class="nt">&lt;/pose&gt;</span>
+  <span class="nt">&lt;interface&gt;</span>eth1<span class="nt">&lt;/interface&gt;</span>
+  <span class="nt">&lt;stolen_interface&gt;</span>wlan0:eth0:192.168.42.1/24<span class="nt">&lt;/stolen_interface&gt;</span>
+  <span class="nt">&lt;wifi_channel&gt;</span>6<span class="nt">&lt;/wifi_channel&gt;</span>
+  <span class="nt">&lt;stolen_bdaddr&gt;</span>00:00:00:00:00:00<span class="nt">&lt;/stolen_bdaddr&gt;</span>
+  <span class="nt">&lt;fs_size&gt;</span>1G<span class="nt">&lt;/fs_size&gt;</span>
+<span class="nt">&lt;/drone&gt;</span>
+</pre></div>
+</div>
+<p><em>Note</em>: Most drone options can be changed from command line. To see the list of
+available drone options, type:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx --help
+</pre></div>
+</div>
+<p>Thus, to add or to override an option from the command line, you can use the
+following syntax:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx &lt;path/to/my.drone&gt;::&lt;name1&gt;<span class="o">=</span>&lt;value1&gt;::&lt;name2&gt;::&lt;value2&gt;...
+</pre></div>
+</div>
+<p>For example, to set the wifi channel and the disk size of the drone:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx &lt;path/to/my.drone&gt;::wifi_channel<span class="o">=</span><span class="m">2</span>::fs_size<span class="o">=</span>1G
+</pre></div>
+</div>
+<p><em>&lt;machine_params&gt;</em> attributes can also be set via command line in the same
+manner.
+For example, to disable the front camera:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx &lt;path/to/my.drone&gt;::with_front_cam<span class="o">=</span><span class="m">0</span>
+</pre></div>
+</div>
+<div class="section" id="the-code-explained">
+<h2>The code explained<a class="headerlink" href="#the-code-explained" title="Permalink to this headline">¶</a></h2>
+<p>The first part of the code sets the unique name of the drone, the path to its
+firmware (check section <a class="reference internal" href="#path-to-the-firmware">Path to the firmware</a> for more details) and the board
+on which the firmware will run (check section <a class="reference internal" href="#hardware-strings">Hardware strings</a> for more
+details).</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;drone</span>
+  <span class="na">name=</span><span class="s">&quot;anafi4k&quot;</span>
+  <span class="na">firmware=</span><span class="s">&quot;http://plf.parrot.com/sphinx/firmwares/anafi/pc/latest/images/anafi-pc.ext2.zip&quot;</span>
+  <span class="na">hardware=</span><span class="s">&quot;anafi4k&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+</div>
+<p>The optional <em>&lt;machine_params&gt;</em> tag provides options to customize the way the
+drone will work. The available machine_params depend on the drone. More details
+are given in section <a class="reference internal" href="#drone-machine-params">Drone machine_params</a>. If machine_params are not
+specified, default values are used.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;machine_params</span>
+  <span class="na">with_front_cam=</span><span class="s">&quot;1&quot;</span>
+  <span class="na">simple_front_cam=</span><span class="s">&quot;1&quot;</span>
+  <span class="na">sdcard_serial=</span><span class="s">&quot;__undefined__&quot;</span>
+  <span class="na">with_gimbal=</span><span class="s">&quot;1&quot;</span>
+  <span class="na">low_gpu=</span><span class="s">&quot;0&quot;</span>
+  <span class="nt">/&gt;</span>
+</pre></div>
+</div>
+<p>The optional <em>&lt;pose&gt;</em> tag sets the initial pose of the drone’s center of
+gravity. Its value could either be the name of an existing spawn point in the
+world or a list of coordinates (x y z roll pitch yaw in meters and radians). The
+list of spawn points for a given world can be found in its fwman plugin
+configuration. If the <em>&lt;pose&gt;</em> tag is not defined, the spawn point named
+“default” will be used by default.</p>
+<p>When using coordinates, care must be taken to properly set the z coordinate. If
+it is too high, the drone is going to fall badly at simulation start. If it is
+too low, the drone will be dug into the floor, and by reaction, the physics
+engine will make it springs erratically.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;pose&gt;</span>landing_area<span class="nt">&lt;/pose&gt;</span>
+</pre></div>
+</div>
+<p>The mandatory <em>&lt;interface&gt;</em> tag sets the name of the virtual ethernet
+interface’s end, living in the drone’s firmware instance, it must be set to
+avoid collisions with the name of the wifi interface, if any.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;interface&gt;</span>eth1<span class="nt">&lt;/interface&gt;</span>
+</pre></div>
+</div>
+<p>The optional <em>&lt;stolen_interface&gt;</em> tag configures the wifi interface of the
+simulated drone. It follows the syntax: NAME:NAME_ONCE_ASSIGNED:IP_ADDRESS where</p>
+<ul class="simple">
+<li><p>NAME is the name of your wifi interface as it appears on the host when
+entering ifconfig command.</p></li>
+</ul>
+<p>For the currently supported drones,</p>
+<ul class="simple">
+<li><p>NAME_ONCE_ASSIGNED must be ‘eth0’,</p></li>
+<li><p>IP_ADDRESS must be ‘192.168.42.1/24’.</p></li>
+</ul>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;stolen_interface&gt;</span>wlan0:eth0:192.168.42.1/24<span class="nt">&lt;/stolen_interface&gt;</span>
+</pre></div>
+</div>
+<p>The optional <em>&lt;wifi_channel&gt;</em> tag forces the use of a specific wifi channel.
+In some particular cases, this option can help you out.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;wifi_channel&gt;</span>6<span class="nt">&lt;/wifi_channel&gt;</span>
+</pre></div>
+</div>
+<p>The optional <em>&lt;stolen_bdaddr&gt;</em> tag sets the MAC address of the Bluetooth
+interface to be used by the simulated drone. This element is a must if your
+drone needs a Bluetooth connection.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;stolen_bdaddr&gt;</span>00:00:00:00:00:00<span class="nt">&lt;/stolen_bdaddr&gt;</span>
+</pre></div>
+</div>
+<p>The optional <em>&lt;fs_size&gt;</em> tag sets the drone disk space available in the root
+file system. If this tag is omitted the drone will use the host file system
+disk space. When this tag is present, it must contain a valid memory size:
+a positive integer optionally followed by a metric prefix ‘k’, ‘K’, ‘m’, ‘M’,
+‘g’ or ‘G’. For example “1048576”, “1m” or “1M” are all equivalent to a 1 MB
+available disk space. The maximum value for this option is 2 GB.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;fs_size&gt;</span>1G<span class="nt">&lt;/fs_size&gt;</span>
+<span class="nt">&lt;/drone&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hardware-strings">
+<h2>Hardware strings<a class="headerlink" href="#hardware-strings" title="Permalink to this headline">¶</a></h2>
+<p>Available hardware strings</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35%" />
+<col style="width: 65%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Drone</p></th>
+<th class="head"><p>Hardware name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Anafi4k</p></td>
+<td><p>anafi4k</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bebop</p></td>
+<td><p>mykonos3board</p></td>
+</tr>
+<tr class="row-even"><td><p>Bebop2</p></td>
+<td><p>milosboard</p></td>
+</tr>
+<tr class="row-odd"><td><p>Disco</p></td>
+<td><p>evinrudeboard</p></td>
+</tr>
+<tr class="row-even"><td><p>Airborne</p></td>
+<td><p>delosevosip6board</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mambo</p></td>
+<td><p>delos3board</p></td>
+</tr>
+<tr class="row-even"><td><p>Swing</p></td>
+<td><p>wingxboard</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bluegrass</p></td>
+<td><p>chimeraboard</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="path-to-the-firmware">
+<h2>Path to the firmware<a class="headerlink" href="#path-to-the-firmware" title="Permalink to this headline">¶</a></h2>
+<p>The path to the firmware can be expressed in several ways:</p>
+<ul class="simple">
+<li><p>a path to an ext2.zip file, .e.g.  /home/myself/sphinx/anafi-pc.ext2.zip</p></li>
+<li><p>any URI recognized by curl, e.g. <a class="reference external" href="http://path/to/my/firmware.ext2.zip">http://path/to/my/firmware.ext2.zip</a></p></li>
+</ul>
+<p><strong>Important note</strong>: The firmware images of commercial versions are hosted on
+a dedicated public server. One can browse all available images by accessing
+the following URL: <a class="reference external" href="http://plf.parrot.com/sphinx/firmwares/index.html">http://plf.parrot.com/sphinx/firmwares/index.html</a></p>
+</div>
+<div class="section" id="drone-machine-params">
+<h2>Drone machine_params<a class="headerlink" href="#drone-machine-params" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<tbody>
+<tr>
+<th>machine_param</th>
+<th>expected values</th>
+<th>description</th>
+<th>default</th>
+</tr>
+<tr>
+<td>with_front_cam</td>
+<td>1 or 0</td>
+<td>if 0, remove the frontal camera to lower the ressource needs</td>
+<td>1</td>
+</tr>
+<tr>
+<td>low_gpu</td>
+<td>1 or 0</td>
+<td>if 1, reduce camera rendering quality to speed up GPU processing</td>
+<td>0</td>
+</tr>
+<tr>
+<td>simple_front_cam</td>
+<td>1 or 0</td>
+<td>if 1, the front cam is configured as a standard camera instead of a fisheye one.
+    Stabilization is done by the simulator and not by the drone firmware</td>
+<td>0</td>
+</tr><tr>
+<td>with_bumpers</td>
+<td>1 or 0</td>
+<td>if 1, add bumpers around drone's body</td>
+<td>0</td>
+</tr>
+<tr>
+<td>with_sequoia_payload</td>
+<td>1 or 0</td>
+<td>if 1, add the mass of sequoia boxes in drone's body</td>
+<td>0</td>
+</tr>
+<tr>
+<td>with_hd_battery</td>
+<td>1 or 0</td>
+<td>if 1, use an HD battery</td>
+<td>0</td>
+</tr>
+<tr>
+<td>with_flir</td>
+<td>1 or 0</td>
+<td>if 1, attach and simulate a FLIR One Thermal camera on the drone.
+    Mass and inertia of the drone are affected by this property even if
+    there is no visual for the FLIR camera</td>
+<td>0</td>
+</tr>
+<tr>
+<td>flir_pos</td>
+<td>vertical, horizontal or tilted</td>
+<td>define the orientation of the FLIR One Camera (if with_flir=1)</td>
+<td>tilted</td>
+</tr>
+<tr>
+<td>swing_color</td>
+<td>black or white</td>
+<td>set the drone's color</td>
+<td>black</td>
+</tr>
+<tr>
+<td>evo_type</td>
+<td>hydrofoil, light or brick</td>
+<td>set the drone's type</td>
+<td>brick</td>
+</tr>
+<tr>
+<td>evo_style</td>
+<td>travis, mars, swat, maclane, orak, blaze or newz</td>
+<td>set the drone's style</td>
+<td>mars</td>
+</tr>
+
+<tr>
+<td>sdcard_serial</td>
+<td>string containing an SDCARD serial number</td>
+<td>Tells Parrot-Sphinx which USB storage device to be used to simulate an SDCARD</td>
+<td>"__undefined__"</td>
+</tr>
+<tr>
+<td>with_gimbal</td>
+<td>1 or 0</td>
+<td>if 1, activate all joints related to the gimbal(s).
+    If 0, camera stabilization is faked.</td>
+<td>0</td>
+</tr></tbody>
+</table>
+<br><p><strong>Valid machine_params by drone models:</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>drone</p></th>
+<th class="head"><p>machine_param</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Airborne</p></td>
+<td><p>with_bumpers    <br />
+evo_style       <br />
+evo_type</p></td>
+</tr>
+<tr class="row-odd"><td><p>Anafi4k</p></td>
+<td><p>with_front_cam    <br />
+low_gpu           <br />
+simple_front_cam  <br />
+sdcard_serial     <br />
+with_gimbal       <br /></p></td>
+</tr>
+<tr class="row-even"><td><p>Bebop</p></td>
+<td><p>with_bumpers    <br />
+with_front_cam  <br />
+low_gpu</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bebop2</p></td>
+<td><p>with_front_cam  <br />
+with_hd_battery <br />
+with_flir       <br />
+flir_pos        <br />
+low_gpu</p></td>
+</tr>
+<tr class="row-even"><td><p>Bluegrass</p></td>
+<td><p>with_front_cam  <br />
+low_gpu         <br /></p></td>
+</tr>
+<tr class="row-odd"><td><p>Disco</p></td>
+<td><p>with_front_cam  <br />
+low_gpu         <br />
+with_sequoia_payload</p></td>
+</tr>
+<tr class="row-even"><td><p>Mambo</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Swing</p></td>
+<td><p>swing_color</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="worldfile.html" class="btn btn-neutral float-right" title="Anatomy of a ‘.world’ file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="drone-requirements.html" class="btn btn-neutral float-left" title="Take off and hints, drone by drone" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

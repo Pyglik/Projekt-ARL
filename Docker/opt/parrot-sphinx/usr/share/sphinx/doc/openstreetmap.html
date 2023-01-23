@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Create a world with OpenStreetMap &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to make a drone follow scripted trajectories" href="handling.html" />
+    <link rel="prev" title="How to visualize and control Parrot-Sphinx via Gazebo’s topics" href="gazebo_topics.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="advanced_topics.html">Advanced topics</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="firmwared.html">About Firmwared</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html">Running Parrot-Sphinx remotely</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shadows.html">How to add shadows in your scene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gazebo_topics.html">How to visualize and control Parrot-Sphinx via Gazebo’s topics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Create a world with OpenStreetMap</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#get-the-map-data">Get the map data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-the-model-file">Generate the model file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convert-the-obj-wavefront-model-into-a-dae-collada-model">Convert the OBJ (Wavefront) model into a DAE (Collada) model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-sdf-model-for-gazebo">Create a SDF model for Gazebo</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="handling.html">How to make a drone follow scripted trajectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virtualbox.html">Running sphinx in VirtualBox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="followme.html">How to use Follow Me with Parrot-Sphinx</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="advanced_topics.html">Advanced topics</a> &raquo;</li>
+        
+      <li>Create a world with OpenStreetMap</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="create-a-world-with-openstreetmap">
+<h1>Create a world with OpenStreetMap<a class="headerlink" href="#create-a-world-with-openstreetmap" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="get-the-map-data">
+<h2>Get the map data<a class="headerlink" href="#get-the-map-data" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Go to <a class="reference external" href="http://www.openstreetmap.org/">http://www.openstreetmap.org/</a></p></li>
+<li><p>Click on <strong>Export</strong>.</p></li>
+<li><p>Click on <strong>Manually select a different area</strong> and select the area. Be
+careful not to choose an area too large or it will take hours to
+download and Parrot-Sphinx or your machine may not even be able to handle
+it.</p></li>
+<li><p>Click on <strong>Export</strong> and save the file onto your disk.</p></li>
+</ol>
+</div>
+<div class="section" id="generate-the-model-file">
+<h2>Generate the model file<a class="headerlink" href="#generate-the-model-file" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Download OSM2World:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> git clone https://github.com/tordanik/OSM2World.git
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Install its dependencies (you may choose another jdk):</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo apt-get install default-jdk ant
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Build OSM2World:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> OSM2World <span class="o">&amp;&amp;</span> ant jar
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Go to the build directory:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">cd</span> build
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Download and extract the texture pack:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> wget http://osm2world.org/download/files/misc/OSM2World%20Texture%20Selection%202014-07-19.zip
+<span class="gp">$</span> unzip OSM2World<span class="se">\ </span>Texture<span class="se">\ </span>Selection<span class="se">\ </span><span class="m">2014</span>-07-19.zip
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p>Run OSM2World:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> java -jar OSM2World.jar --config texture_config.properties -i /path/to/map.osm -o path/to/map.obj
+</pre></div>
+</div>
+</div>
+<div class="section" id="convert-the-obj-wavefront-model-into-a-dae-collada-model">
+<h2>Convert the OBJ (Wavefront) model into a DAE (Collada) model<a class="headerlink" href="#convert-the-obj-wavefront-model-into-a-dae-collada-model" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Install Blender with collada support:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo add-apt-repository ppa:thomas-schiex/blender
+<span class="gp">$</span> sudo apt-get update
+<span class="gp">$</span> sudo apt-get install blender
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Launch Blender:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> blender
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Import the OBJ file you just generated: <strong>File &gt; Import &gt; Wavefront
+(.obj)</strong></p></li>
+<li><p>Select every objects in the scene: Press <strong>a</strong></p></li>
+<li><p>Join the selected objects: Press ** j**</p></li>
+<li><p>Export the model into a DAE file: <strong>File &gt; Export &gt; Collada (.dae)</strong></p></li>
+<li><p>Select the following options in the lower left panel:
+* <strong>Apply Modifiers</strong>
+* <strong>Include UV Textures</strong>
+* <strong>Include Material Textures</strong></p></li>
+<li><p>Click on <strong>Export COLLADA</strong>. Beware that Blender will create a new
+file for each texture, so it would be wise to create a new directory
+first.</p></li>
+</ol>
+</div>
+<div class="section" id="create-a-sdf-model-for-gazebo">
+<h2>Create a SDF model for Gazebo<a class="headerlink" href="#create-a-sdf-model-for-gazebo" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Create a directory where you will put all your models:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> mkdir my_models <span class="o">&amp;&amp;</span> <span class="nb">cd</span> my_models
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Create a directory for your new model:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> mkdir my_model <span class="o">&amp;&amp;</span> <span class="nb">cd</span> my_model
+</pre></div>
+</div>
+<p>3. Copy the DAE file and all its textures in a new directory named
+“meshes”:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> cp -r /path/to/dae/ meshes
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Create a “model.config” file with this content:</p></li>
+</ol>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+<span class="nt">&lt;model&gt;</span>
+  <span class="nt">&lt;name&gt;</span>My Model<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.0<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;sdf</span> <span class="na">version=</span><span class="s">&quot;1.5&quot;</span><span class="nt">&gt;</span>model.sdf<span class="nt">&lt;/sdf&gt;</span>
+  <span class="nt">&lt;description&gt;</span>
+    My model.
+  <span class="nt">&lt;/description&gt;</span>
+<span class="nt">&lt;/model&gt;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Create a “model.sdf” file with this content:</p></li>
+</ol>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; ?&gt;</span>
+<span class="nt">&lt;sdf</span> <span class="na">version=</span><span class="s">&quot;1.5&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;model</span> <span class="na">name=</span><span class="s">&quot;My Model&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;static&gt;</span>true<span class="nt">&lt;/static&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">name=</span><span class="s">&quot;link&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;collision</span> <span class="na">name=</span><span class="s">&quot;collision&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;geometry&gt;</span>
+          <span class="nt">&lt;mesh&gt;</span>
+            <span class="nt">&lt;uri&gt;</span>model://my_model/meshes/my_model.dae<span class="nt">&lt;/uri&gt;</span>
+          <span class="nt">&lt;/mesh&gt;</span>
+        <span class="nt">&lt;/geometry&gt;</span>
+      <span class="nt">&lt;/collision&gt;</span>
+      <span class="nt">&lt;visual</span> <span class="na">name=</span><span class="s">&quot;visual&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;geometry&gt;</span>
+          <span class="nt">&lt;mesh&gt;</span>
+            <span class="nt">&lt;uri&gt;</span>model://my_model/meshes/my_model.dae<span class="nt">&lt;/uri&gt;</span>
+          <span class="nt">&lt;/mesh&gt;</span>
+        <span class="nt">&lt;/geometry&gt;</span>
+      <span class="nt">&lt;/visual&gt;</span>
+    <span class="nt">&lt;/link&gt;</span>
+  <span class="nt">&lt;/model&gt;</span>
+<span class="nt">&lt;/sdf&gt;</span>
+</pre></div>
+</div>
+<p>Your “my_models” directory should now look like this:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">my_models</span>
+<span class="go"> |__ my_model</span>
+<span class="go">        |__ meshes</span>
+<span class="go">            |__ my_model.dae</span>
+<span class="go">            |__ arbaro_tree_broad_leaved.png</span>
+<span class="go">            |__ arbaro_tree_broad_leaved.png.001.png</span>
+<span class="go">            |__ ...</span>
+<span class="go">        |__ model.config</span>
+<span class="go">        |__ model.sdf</span>
+</pre></div>
+</div>
+<p>6. To include the model in a world, simply add the following lines inside
+the <em>&lt;world&gt;</em> section:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;include&gt;</span>
+  <span class="nt">&lt;uri&gt;</span>model://my_model<span class="nt">&lt;/uri&gt;</span>
+<span class="nt">&lt;/include&gt;</span>
+</pre></div>
+</div>
+<p>7. Then you are ready to fly! But don’t forget to add the path to your
+models in <strong>GAZEBO_MODEL_PATH</strong>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/path/to/my_models sphinx my_world.world</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="handling.html" class="btn btn-neutral float-right" title="How to make a drone follow scripted trajectories" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="gazebo_topics.html" class="btn btn-neutral float-left" title="How to visualize and control Parrot-Sphinx via Gazebo’s topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

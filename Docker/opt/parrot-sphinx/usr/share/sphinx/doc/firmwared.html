@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>About Firmwared &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Running Parrot-Sphinx remotely" href="remote.html" />
+    <link rel="prev" title="Advanced topics" href="advanced_topics.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="advanced_topics.html">Advanced topics</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">About Firmwared</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#starting-firmwared">Starting firmwared</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fdc-firmwared-client">fdc (FirmwareD Client)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html">Running Parrot-Sphinx remotely</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shadows.html">How to add shadows in your scene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gazebo_topics.html">How to visualize and control Parrot-Sphinx via Gazebo’s topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openstreetmap.html">Create a world with OpenStreetMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handling.html">How to make a drone follow scripted trajectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virtualbox.html">Running sphinx in VirtualBox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="followme.html">How to use Follow Me with Parrot-Sphinx</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="advanced_topics.html">Advanced topics</a> &raquo;</li>
+        
+      <li>About Firmwared</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="about-firmwared">
+<h1>About Firmwared<a class="headerlink" href="#about-firmwared" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><strong>Firmwared</strong> is a daemon whose job is to manage a pool of machine firmwares,
+to run one or even several instances of these firmwares and to make sure
+there is no harmful interaction between them and with the host system.</p>
+<p>Three man pages are available : <strong>firmwared</strong>, <strong>fdc</strong> and
+<strong>firmwared.conf</strong>. To display them:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> man /opt/parrot-sphinx/usr/share/man/man1/fdc.1
+<span class="gp">$</span> man /opt/parrot-sphinx/usr/share/man/man1/firmwared.1
+<span class="gp">$</span> man /opt/parrot-sphinx/usr/share/man/man5/firmwared.conf.5
+</pre></div>
+</div>
+</div>
+<div class="section" id="starting-firmwared">
+<h2>Starting firmwared<a class="headerlink" href="#starting-firmwared" title="Permalink to this headline">¶</a></h2>
+<p>As mentioned in <a class="reference internal" href="firststep.html"><span class="doc">First step</span></a>, firmwared can be started either via
+systemd, or by calling it directly:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo systemctl start firmwared.service
+</pre></div>
+</div>
+<p>or…</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo firmwared
+</pre></div>
+</div>
+<p>If you know what you are doing, you can customize the default settings.
+To achieve that, create a file <code class="docutils literal notranslate"><span class="pre">firmwared.conf</span></code> in <code class="docutils literal notranslate"><span class="pre">/etc</span></code> and put
+the following in it:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- lua language syntax</span>
+
+<span class="c1">-- these are just temporary variables, not used as configs in firmwared</span>
+<span class="n">base_dir</span> <span class="o">=</span> <span class="s2">&quot;/path/to/sphinx/&quot;</span>
+<span class="n">firmwared_dir</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">..</span> <span class="s2">&quot;packages/firmwared/&quot;</span>
+<span class="n">hooks_dir</span> <span class="o">=</span> <span class="n">firmwared_dir</span> <span class="o">..</span> <span class="s2">&quot;hooks/&quot;</span>
+<span class="n">final_dir</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">..</span> <span class="s2">&quot;out/sphinx-base/final/&quot;</span>
+<span class="n">share_dir</span> <span class="o">=</span> <span class="n">final_dir</span> <span class="o">..</span> <span class="s2">&quot;usr/share/firmwared/&quot;</span>
+
+<span class="c1">-- here the real configuration keys do start</span>
+<span class="c1">-- the commented out are the ones wich wouldn&#39;t change the default value</span>
+<span class="c1">-- see man firmwared(1)#ENVIRONMENT VARIABLES fo the meaning of each key</span>
+
+<span class="n">FIRMWARED_APPARMOR_PROFILE</span> <span class="o">=</span> <span class="n">share_dir</span> <span class="o">..</span> <span class="s2">&quot;firmwared.apparmor.profile&quot;</span>
+<span class="n">FIRMWARED_POST_PREPARE_INSTANCE_HOOK</span> <span class="o">=</span> <span class="n">hooks_dir</span> <span class="o">..</span> <span class="s2">&quot;post_prepare_instance.hook&quot;</span>
+<span class="c1">-- FIRMWARED_CONTAINER_INTERFACE = &quot;eth0&quot;</span>
+<span class="n">FIRMWARED_CURL_HOOK</span> <span class="o">=</span> <span class="n">hooks_dir</span> <span class="o">..</span> <span class="s2">&quot;curl.hook&quot;</span>
+<span class="c1">-- FIRMWARED_DISABLE_APPARMOR = &quot;n&quot;</span>
+<span class="c1">-- FIRMWARED_DUMP_PROFILE = &quot;n&quot;</span>
+<span class="c1">-- FIRMWARED_HOST_INTERFACE_PREFIX = &quot;fd_veth&quot;</span>
+<span class="n">FIRMWARED_MOUNT_HOOK</span> <span class="o">=</span> <span class="n">hooks_dir</span> <span class="o">..</span> <span class="s2">&quot;mount.hook&quot;</span>
+<span class="n">FIRMWARED_MOUNT_PATH</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">..</span> <span class="s2">&quot;mount/&quot;</span>
+<span class="c1">-- FIRMWARED_NET_FIRST_TWO_BYTES = &quot;10.202.&quot;</span>
+<span class="n">FIRMWARED_NET_HOOK</span> <span class="o">=</span> <span class="n">hooks_dir</span> <span class="o">..</span> <span class="s2">&quot;net.hook&quot;</span>
+<span class="c1">-- FIRMWARED_PREVENT_REMOVAL = &quot;n&quot;</span>
+<span class="n">FIRMWARED_RESOURCES_DIR</span> <span class="o">=</span> <span class="n">share_dir</span>
+<span class="n">FIRMWARED_REPOSITORY_PATH</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">..</span> <span class="s2">&quot;firmwares/&quot;</span>
+<span class="n">FIRMWARED_X11_PATH</span> <span class="o">=</span> <span class="s2">&quot;/tmp/.X11-unix/&quot;</span>
+<span class="c1">-- FIRMWARED_HOSTLIBS_PATHS = &quot;/usr:/usr/lib&quot;</span>
+<span class="c1">-- FIRMWARED_SOCKET_PATH = &quot;/var/run/firmwared.sock&quot;</span>
+<span class="c1">-- FIRMWARED_VERBOSE_HOOK_SCRIPTS = &quot;n&quot;</span>
+<span class="n">FIRMWARED_MAX_CACHED_FIRMWARES</span> <span class="o">=</span> <span class="s2">&quot;10&quot;</span>
+</pre></div>
+</div>
+<p>Now you can customize the way firmwared is running by modifying the
+configuration file. To have firmwared take this file into account, just restart
+it.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo systemctl restart firmwared.service
+</pre></div>
+</div>
+<p>Note: all logs produced by firmwared are directed into syslog.</p>
+</div>
+<div class="section" id="fdc-firmwared-client">
+<h2>fdc (FirmwareD Client)<a class="headerlink" href="#fdc-firmwared-client" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fdc</span></code> is a command line tool that lets you control and monitor firmwared.
+Below are some typical examples of what fdc can do. To have more info, refer
+to the man page.</p>
+<ul class="simple">
+<li><p>list up the firmwares present in the cache</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> fdc list firmwares
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>list up the existing firmware instances (should be none if no simulation is
+running):</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> fdc list instances
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>retrieve information about an existing instance:</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> fdc show instances tremulous_patty
+<span class="go">name: tremulous_patty</span>
+<span class="go">sha1: 13238174bdcb5db0327832bc39c5bd240b4637d7</span>
+<span class="go">id: 1</span>
+<span class="go">pid: 1</span>
+<span class="go">state: ready</span>
+<span class="go">firmware_path: /opt2/work/sphinx/firmwares//ardrone3-milos_pc.ext2.firmware</span>
+<span class="go">base_workspace: /opt2/work/sphinx/mount//7d99bf3e58c94f938113cdcf24a0b0d00e240840</span>
+<span class="go">inner_pts: /dev/pts/10</span>
+<span class="go">outer_pts: /dev/pts/7</span>
+<span class="go">firmware_sha1: 2722eb42c643febd76fa9d99433b7e56a8778737</span>
+<span class="go">time: Fri Jun 12 14:39:06 2015</span>
+<span class="go">interface: eth0</span>
+<span class="go">cmdline: /sbin/boxinit ro.hardware=mk3_sim_pc ro.debuggable=1 ro.boot.console=/pts/10</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>kill (if needed) and remove a specific instance:</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> fdc drop instances tremulous_patty
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>kill (if needed) and remove <strong>ALL</strong> instances. This command is convenient
+when spurious instances are still running in background for any reason.</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> fdc drop_all instances
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="remote.html" class="btn btn-neutral float-right" title="Running Parrot-Sphinx remotely" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="advanced_topics.html" class="btn btn-neutral float-left" title="Advanced topics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

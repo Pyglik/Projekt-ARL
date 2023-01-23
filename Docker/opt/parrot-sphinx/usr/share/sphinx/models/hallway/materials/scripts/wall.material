@@ -1,0 +1,17 @@
+material Wall/TagWall
+{
+  receive_shadows on
+
+  technique
+  {
+    pass
+    {
+      ambient 1.0 1.0 1.0 1.000000
+
+      texture_unit
+      {
+        texture tag.jpg
+      }
+    }
+  }
+}

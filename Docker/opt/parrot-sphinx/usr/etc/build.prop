@@ -1,0 +1,12 @@
+ro.build.date=Mon Mar  9 21:08:48 UTC 2020
+ro.build.date.utc=1583788128
+ro.build.alchemy.product=sphinx
+ro.build.alchemy.variant=public
+ro.build.hostname=03554935e2a4
+ro.parrot.build.group=drones
+ro.parrot.build.project=sphinx
+ro.parrot.build.product=sphinx
+ro.parrot.build.variant=public
+ro.parrot.build.region=
+ro.parrot.build.uid=sphinx-public-20200309-2108-0.0.0
+ro.parrot.build.version=0.0.0

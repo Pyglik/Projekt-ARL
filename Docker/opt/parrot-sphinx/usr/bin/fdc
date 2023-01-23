@@ -1,0 +1,262 @@
+#!/bin/bash
+
+ERROR_TIMEOUT=3
+ERROR_INVALID_COMMAND=2
+ERROR_OTHER=1
+ERROR_SUCCESS=0
+
+set -e
+set -u
+if [ -n "${V+x}" ]
+then
+	set -x
+fi
+
+# find what is the root, from which sphinx is installed
+root="$(cd "$(dirname "$0")"; pwd -P)"
+root=${root%/usr/bin}
+libfwd=${root}/usr/lib/libfwd.so
+
+usage() {
+	cat <<usage_here_document
+Usage : fdc COMMAND [arguments_list]
+	Command names are case-insensitive.
+	The arguments_list depend on the commands used.
+	Use 'fdc commands' to obtain the list of available commands.
+	Use 'fdc help COMMAND' to get some help on a command COMMAND.
+usage_here_document
+}
+
+on_exit() {
+	status=$?
+	case "${status}" in
+		${ERROR_TIMEOUT})
+			echo "Connection with firmwared timed out"
+			;;
+		${ERROR_INVALID_COMMAND})
+			echo "Command \"${command}\" not found"
+			usage
+			;;
+		${ERROR_OTHER})
+			echo "Command-line error"
+			usage
+			;;
+		${ERROR_SUCCESS})
+			# nothing to be done
+			;;
+		*)
+			if [ "${status}" -le 128 ]; then
+				echo "Failed with error "${status}
+				usage
+			fi # no else since we use signalling internally
+			;;
+	esac
+	if [ -n "${exit_command+x}" ]
+	then
+		${exit_command}
+	fi
+}
+
+trap on_exit EXIT
+
+timeout=${FDC_TIMEOUT:-6}
+
+# the following trick checks if the variable is set. we can't test if it is
+# empty, because the set -u will trigger an error
+if [ -z "${FIRMWARED_SOCKET_PATH+x}" ]
+then
+	socket="/var/run/firmwared.sock"
+else
+	socket=${FIRMWARED_SOCKET_PATH}
+fi
+
+seqnum=$$
+
+command=$(echo $1 | tr '[a-z]' '[A-Z]')
+command_params="${@:2}"
+command_extra_params=""
+
+cmd_id=$(LIBFWD_MESSAGE=${command} ${libfwd})
+ans_id=$(LIBFWD_GET_ANSWER_ID= LIBFWD_MESSAGE=${command} ${libfwd})
+err_id=$(LIBFWD_MESSAGE=ERROR ${libfwd})
+format=$(LIBFWD_GET_MESSAGE_FORMAT= LIBFWD_MESSAGE=${command} ${libfwd})
+
+# order shall match enum fwd_message
+# variable assignations, even when not read afterwards, allow the shell to
+# produce an error automatically when the corresponding parameter is undefined
+case "${command}" in
+	ADD_PROPERTY)
+		folder=$2
+		name=$3
+		sed_command="s/.*STR:'\([^']*\)'.*/property \1 added/g"
+		;;
+	COMMANDS)
+		sed_command="s/.*STR:'\([^']*\)'.*/\1 RESTART/g"
+		;;
+	CONFIG_KEYS)
+		sed_command="s/.*ID:${ans_id}.*STR:'\([^']*\)'.*/\1/g"
+		;;
+	DROP)
+		folder=$2
+		identifier=$3
+		sed_command="s/.*/${identifier} dropped/g"
+		;;
+	DROP_ALL)
+		folder=$2
+		sed_command="s/.*//g"
+		;;
+	EXEC)
+		identifier=$2
+		command_params=${identifier}
+		command_extra_params="${@:3}" # exec command line parameters
+		sed_command="s#.*I32:\([^}]*\)}#${command_extra_params} returned \\1#g"
+		timeout=-1
+		;;
+	UNPREPARE)
+		identifier=$2
+		sed_command="s/.*/${identifier} unprepared/g"
+		;;
+	FOLDERS)
+		sed_command="s/.*STR:'\([^']*\)'.*/\1/g"
+		;;
+	GET_CONFIG)
+		config_key=$2
+		sed_command="s#.*STR:'[^']*', STR:'\([^']*\)'.*#\1#g"
+		;;
+	GET_PROPERTY)
+		folder=$2
+		entity_identifier=$3
+		property_name=$4
+		sed_command="s/.*STR:'\([^']*\)'.*/\1/g"
+		;;
+	HELP)
+		identifier=$(echo $2 | tr '[a-z]' '[A-Z]')
+		if [ "${identifier}" = "RESTART" ]; then
+			echo "Command RESTART"
+			echo "Synopsis: RESTART INSTANCE_IDENTIFIER"
+			echo "Overview: fdc meta-command which performs kill, \
+remount and start on an instance."
+			exit 0
+		fi
+		sed_command="s/.*STR:'//g"
+		;;
+	KILL)
+		format="%u%s"
+		identifier=$2
+		sed_command="s/.*/${identifier} killed/g"
+		;;
+	KILL_ALL)
+		format="%u"
+		sed_command="s/.*/all instances killed/g"
+		;;
+	LIST)
+		folder=$2
+		sed_command="s/.*STR:'${folder}', U32:[0-9]*, STR:'\([^']*\)'.*/\1/g"
+		;;
+	PING)
+		sed_command="s/.*/PONG/g"
+		;;
+	PREPARE)
+		folder=$2
+		timeout=-1
+		if [ "${folder}" = "firmwares" ]; then
+			exit_command='echo -ne \033[?25h' # show the cursor again
+		fi
+		identification_string=$3
+		properties="${*:4}"
+		properties=$(echo $properties | \
+			sed -E 's/([^ "]+) (("[^"]*")|([^ "]+)) ?/\1:\3\4\'$'\n/g')
+		command_params="$folder $identification_string"
+		command_extra_params="$properties"
+		sed_command[0]="s#.*ID:${ans_id}.*STR:'\([^']*\)', STR:'\([^']*\)', STR:'\([^']*\)'.*#new entity in \1 folder created\nsha1: \2\nname: \3#g"
+		sed_command[1]="s#.*STR:'\([^']*\)', STR:'\([^']*\)', STR:'\([^']*\)'.*#\3% done$(echo -e '\033[1A\033[?25l')#g" # will hide the cursor
+		;;
+	PROPERTIES)
+		folder=$2
+		sed_command="s/.*STR:'\([^']*\)'[^']*/\1/g"
+		;;
+	QUIT)
+		sed_command="s/.*ID:${ans_id}.*/firmwared said bye bye/g"
+		;;
+	REMOUNT)
+		format="%u%s"
+		identifier=$2
+		sed_command="s/.*/${identifier} remounted/g"
+		;;
+	REGISTER_PORT)
+		format="%u%u%s%hhu"
+		port=$2
+		owner=$3
+		exact=$4
+		command_params="$port $owner $exact"
+		sed_command="s/.*U32:\([0-9]*\).*/\1 registered/g"
+		;;
+	UNREGISTER_PORT)
+		format="%u%u"
+		port=$2
+		command_params="$port"
+		sed_command="s/.*U32:\([0-9]*\).*/\1 unregistered/g"
+		;;
+	UNREGISTER_ALL_PORTS)
+		format="%u%s"
+		owner=$2
+		command_params="$owner"
+		sed_command="s/.*STR:'\([0-9]*\)'.*/unregistered ports owned by \1/g"
+		;;
+	RESTART)
+		identifier=$2
+		fdc kill $identifier || true
+		fdc remount $identifier
+		fdc start $identifier
+		exit 0
+		;;
+	SET_PROPERTY)
+		folder=$2
+		entity_identifier=$3
+		properties="${*:4}"
+		properties=$(echo $properties | \
+			sed -E 's/([^ "]+) (("[^"]*")|([^ "]+)) ?/\1:\3\4\'$'\n/g')
+		command_params="$folder $entity_identifier"
+		command_extra_params="$properties"
+		sed_command="s/.*STR:'\([^']*\)'.*/\1/g"
+		;;
+	SHOW)
+		folder=$2
+		identifier=$3
+		sed_command="s/.*STR:'//g"
+		;;
+	START)
+		format="%u%s"
+		identifier=$2
+		sed_command="s/.*/${identifier} started/g"
+		;;
+# upper level commands
+	VERSION)
+		sed_command="s/.*STR:'//g"
+		;;
+	*)
+		exit ${ERROR_INVALID_COMMAND}
+		;;
+esac
+
+pomp_cmd="${root}/usr/bin/pomp-cli --timeout ${timeout} --dump --wait ${ans_id} unix:${socket}"
+
+exec ${pomp_cmd} ${cmd_id} ${format} ${seqnum} ${command_params} \
+	"${command_extra_params}" 2>&1 | while read line
+do
+	if [ -n "$(echo ${line} | grep 'POMPCLI: event_cb :')" ];
+	then
+		continue
+	fi
+	if [ -n "$(echo ${line} | grep 'POMPCLI: Timeout !')" ];
+	then
+		exit ${ERROR_TIMEOUT}
+	fi
+	if [ -n "$(echo ${line} | grep 'ID:'${err_id})" ];
+	then
+		echo ${line} | sed "s#.*'\([^']*\)'.*#firmwared error: \1#g"
+		kill -INT $(ps --ppid $seqnum -o pid h)
+		exit ${ERROR_OTHER}
+	fi
+	echo ${line} | sed "${sed_command[0]}" | sed "${sed_command[1]-s/ / /}" | sed "s/'}$//g" | egrep -v '^[[:space:]]*$' || true
+done

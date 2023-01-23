@@ -1,0 +1,47 @@
+package sphinx_msgs;
+
+/// \ingroup sphinx_msgs
+/// \interface Gimbal
+/// \brief Gimbal message
+
+message Gimbal
+{
+  /// \brief Current yaw angle.
+  optional double yaw = 1;
+
+  /// \brief Current roll angle.
+  optional double roll = 2;
+
+  /// \brief Current pitch angle.
+  optional double pitch = 3;
+
+  /// \brief Target yaw angle.
+  optional double cmd_yaw = 4;
+
+  /// \brief Target roll angle.
+  optional double cmd_roll = 5;
+
+  /// \brief Target pitch angle.
+  optional double cmd_pitch = 6;
+
+  /// \brief Command to reset the gimbal.
+  optional double cmd_reset = 7;
+
+  /// \brief Force applied on yaw axis.
+  optional double force_yaw = 8;
+
+  /// \brief Force applied on roll axis.
+  optional double force_roll = 9;
+
+  /// \brief Force applied on pitch axis.
+  optional double force_pitch = 10;
+
+  /// \brief Estimated roll angle.
+  optional double angle_roll = 11;
+
+  /// \brief Estimated pitch angle.
+  optional double angle_pitch = 12;
+
+  /// \brief Estimated yaw angle.
+  optional double angle_yaw = 13;
+}

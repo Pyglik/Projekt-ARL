@@ -1,0 +1,387 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Troubleshooting &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Parrot-Sphinx license agreement" href="license.html" />
+    <link rel="prev" title="Tuning of drone internals at runtime - Howtos" href="pluginctrl_howtos.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#general-comments">General comments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unable-to-connect-the-drone-via-the-virtual-ethernet-interface">Unable to connect the drone via the virtual ethernet interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-simulation-does-not-start">The simulation does not start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sphinx-crashes-when-starting-mentioning-the-locale">Sphinx crashes when starting, mentioning the locale</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sphinx-has-crashed-leaving-behind-a-running-firmware">Sphinx has crashed leaving behind a running firmware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#during-the-simulation-the-drone-acts-erratically-gets-uncontrollable-and-or-falls">During the simulation the drone acts erratically, gets uncontrollable and/or falls.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#my-wifi-interface-got-its-name-changed-after-exiting-the-simulation">My wifi interface got its name changed after exiting the simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-simulation-is-very-slow-does-not-work">The simulation is very slow / does not work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#i-followed-system-requirements-about-wifi-but-it-is-like-wifi-does-not-work">I followed system requirements about wifi, but it is like wifi does not work</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#i-cannot-access-the-web-dashboard-using-http-localhost-9002">I cannot access the web dashboard using http://localhost:9002</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced topics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Troubleshooting</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="general-comments">
+<h2>General comments<a class="headerlink" href="#general-comments" title="Permalink to this headline">¶</a></h2>
+<p>When a problem occurs, the first thing to do is to check the traces left by the
+software. In particular, the shell from where you launched sphinx may show
+valuable pieces of information. To increase the verbosity, just launch sphinx
+with the option <code class="docutils literal notranslate"><span class="pre">--log-level</span> <span class="pre">dbg</span></code>.</p>
+<p>Another source of logs is syslog (<code class="docutils literal notranslate"><span class="pre">/var/log/syslog</span></code>).
+It mainly contains the logs posted by firmwared.</p>
+</div>
+<div class="section" id="unable-to-connect-the-drone-via-the-virtual-ethernet-interface">
+<h2>Unable to connect the drone via the virtual ethernet interface<a class="headerlink" href="#unable-to-connect-the-drone-via-the-virtual-ethernet-interface" title="Permalink to this headline">¶</a></h2>
+<p>While the simulation is running, ifconfig should show an interface
+‘fd_vethx’ up:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ifconfig
+
+<span class="go">fd_veth0  Link encap:Ethernet  HWaddr 66:a8:ad:06:b2:6b</span>
+<span class="go">          inet addr:10.202.0.254  Bcast:0.0.0.0  Mask:255.255.255.0</span>
+<span class="go">          inet6 addr: fe80::64a8:adff:fe06:b26b/64 Scope:Link</span>
+<span class="go">          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1</span>
+<span class="go">          RX packets:4 errors:0 dropped:0 overruns:0 frame:0</span>
+<span class="go">          TX packets:5 errors:0 dropped:0 overruns:0 carrier:0</span>
+<span class="go">          collisions:0 txqueuelen:1000</span>
+<span class="go">          RX bytes:422 (422.0 B)  TX bytes:534 (534.0 B)</span>
+</pre></div>
+</div>
+<p>If this is not the case, the network-manager coming with your linux distribution
+may interfere with sphinx. A solution consists in disabling the network-manager
+while you are using sphinx.</p>
+</div>
+<div class="section" id="the-simulation-does-not-start">
+<h2>The simulation does not start<a class="headerlink" href="#the-simulation-does-not-start" title="Permalink to this headline">¶</a></h2>
+<p>There can be many reasons for that. Here is a short list.</p>
+<ul class="simple">
+<li><p>Some constraints given in <a class="reference internal" href="system-requirements.html"><span class="doc">System requirements</span></a> may not be respected.
+Please double check.</p></li>
+</ul>
+</div>
+<div class="section" id="sphinx-crashes-when-starting-mentioning-the-locale">
+<h2>Sphinx crashes when starting, mentioning the locale<a class="headerlink" href="#sphinx-crashes-when-starting-mentioning-the-locale" title="Permalink to this headline">¶</a></h2>
+<p>A simple <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">LANG=C</span></code> can resolve the problem.</p>
+</div>
+<div class="section" id="sphinx-has-crashed-leaving-behind-a-running-firmware">
+<h2>Sphinx has crashed leaving behind a running firmware<a class="headerlink" href="#sphinx-has-crashed-leaving-behind-a-running-firmware" title="Permalink to this headline">¶</a></h2>
+<p>Despite our best effort in rare circumstances Sphinx may crash leaving behind
+some zombie running firmwares. In such scenario, those running firmwares may
+use system ressources preventing you from launching any new simulation.
+When it’s time to clean up everything use the following command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> fdc drop_all instances
+</pre></div>
+</div>
+<p>This command will kill any running firmware instance and unmount all firmware
+instances.</p>
+</div>
+<div class="section" id="during-the-simulation-the-drone-acts-erratically-gets-uncontrollable-and-or-falls">
+<h2>During the simulation the drone acts erratically, gets uncontrollable and/or falls.<a class="headerlink" href="#during-the-simulation-the-drone-acts-erratically-gets-uncontrollable-and-or-falls" title="Permalink to this headline">¶</a></h2>
+<p>The reasons for that issue are likely to be numerous. We are going to focus
+on the most relevant ones.</p>
+<ul class="simple">
+<li><p>The real time execution is disturbed by another process. It is highly
+recommended to avoid running any CPU/GPU consumming task while sphinx is on.</p></li>
+<li><p>On some laptop, the energy saving mode can lead to some disturbances. In that
+case, check if a kernel module called “intel_powerclamp” is present. If yes,
+remove it:</p></li>
+</ul>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo rmmod intel_powerclamp
+</pre></div>
+</div>
+<p>To inhibit it once for good:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">echo</span> <span class="s2">&quot;blacklist intel_powerclamp&quot;</span> &gt; /etc/modprobe.d/disable-powerclamp.conf
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="my-wifi-interface-got-its-name-changed-after-exiting-the-simulation">
+<h2>My wifi interface got its name changed after exiting the simulation<a class="headerlink" href="#my-wifi-interface-got-its-name-changed-after-exiting-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>To workaround it and set the wifi interface name once for good,
+proceed as follows:</p>
+<ul>
+<li><p>Create a new udev rule file:</p>
+<ul class="simple">
+<li><p>/etc/udev/rules.d/76-netnames.rules for Debian 9+</p></li>
+<li><p>/etc/udev/rules.d/70-persistent-net.rules for other distributions</p></li>
+</ul>
+</li>
+<li><p>Add and adapt the following instruction:</p>
+<blockquote>
+<div><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>SUBSYSTEM==&quot;net&quot;, ACTION==&quot;add&quot;, ATTR{address}==&quot;&lt;Wifi_card_MAC&gt;&quot;, NAME=&quot;wlan0&quot;
+</pre></div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">&lt;Wifi_card_MAC&gt;</span></code> by the wifi MAC address. You can find it easily
+with the <code class="docutils literal notranslate"><span class="pre">ip</span> <span class="pre">addr</span></code> command.</p>
+</div></blockquote>
+</li>
+<li><p>Deactivate/reactivate the wifi card so that the changes are taken into
+account by udev.</p></li>
+</ul>
+<p>That way, the wifi interface wifi always has the name <code class="docutils literal notranslate"><span class="pre">wlan0</span></code> from now on.</p>
+</div>
+<div class="section" id="the-simulation-is-very-slow-does-not-work">
+<h2>The simulation is very slow / does not work<a class="headerlink" href="#the-simulation-is-very-slow-does-not-work" title="Permalink to this headline">¶</a></h2>
+<p>This might be due to the front camera activation.
+Sphinx users wishing to active video and having a graphics card not sufficiently
+powerful can choose the <code class="docutils literal notranslate"><span class="pre">low_gpu</span></code> mode, accessible within the
+<code class="docutils literal notranslate"><span class="pre">machine_params</span></code>.</p>
+<p>With the <code class="docutils literal notranslate"><span class="pre">low_gpu</span></code> mode activated, if you are able to connect to the drone but
+still can’t take off, you should retry with the drone
+<a class="reference external" href="drone-requirements.html#using-the-front-camera">front camera</a>
+completely disabled.</p>
+<p>See <a class="reference external" href="dronefile.html#drone-machine-params">Drone machine_params</a></p>
+</div>
+<div class="section" id="i-followed-system-requirements-about-wifi-but-it-is-like-wifi-does-not-work">
+<h2>I followed system requirements about wifi, but it is like wifi does not work<a class="headerlink" href="#i-followed-system-requirements-about-wifi-but-it-is-like-wifi-does-not-work" title="Permalink to this headline">¶</a></h2>
+<p>When you are testing a new WiFi USB adapter it might be important to check that
+the chipset integrated in your adapter is really what you think it is. Indeed,
+it is a common practice among WiFi adapter brand distributors to change the
+chipset reference and/or the chipset vendor without changing the reference of
+their retailed product. Some of them increment a hardware revision number (e.g.
+A1, A2, B1, etc ..) and print this number on the packaging or on the product
+itself. If in any doubt you suspect that something is wrong, you can try to
+obtain more information on the integrated chipset by following the instructions
+below:</p>
+<ol class="arabic simple">
+<li><p>Find your device ID (XXXX:YYYY) in the output of the following command:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> lsusb
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>See if there is any useful chipset information (vendor name, reference, …)
+in the output of the following command:</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> lsusb -vd XXXX:YYYY <span class="p">|</span> head -n <span class="m">20</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Try to check those information against
+<a class="reference external" href="https://wikidevi.com/wiki/Special:RunQuery/Wireless_adapter_query">this community database</a>
+to identify your device hardware reference/revision/driver.</p></li>
+</ol>
+</div>
+<div class="section" id="i-cannot-access-the-web-dashboard-using-http-localhost-9002">
+<h2>I cannot access the web dashboard using <a class="reference external" href="http://localhost:9002">http://localhost:9002</a><a class="headerlink" href="#i-cannot-access-the-web-dashboard-using-http-localhost-9002" title="Permalink to this headline">¶</a></h2>
+<p>The HTTP port may be different from 9002. Check Sphinx’s shell output.
+Find the message providing the information, like this one:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[Msg] WEB DASHBOARD IS ACCESSIBLE at http://localhost:9005
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="license.html" class="btn btn-neutral float-right" title="Parrot-Sphinx license agreement" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pluginctrl_howtos.html" class="btn btn-neutral float-left" title="Tuning of drone internals at runtime - Howtos" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

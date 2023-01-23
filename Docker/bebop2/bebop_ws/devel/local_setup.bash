@@ -1,0 +1,1 @@
+/home/bebop2/bebop_ws/devel/.private/catkin_tools_prebuild/local_setup.bash

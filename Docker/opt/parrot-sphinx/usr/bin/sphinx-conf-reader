@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+
+import sys
+import logging
+import configparser
+import shlex
+
+"""
+Parse configuration files (ini format), and print to stdout a sourcable shell
+script that defines the configuration as environment variables in uppercase.
+The environment variables names format is <ENVPREFIX>_<SECTION>_<OPTION>.
+
+Usage:
+    $0 ENVPREFIX [CONFIGURATION_FILEPATHS...]
+"""
+
+
+def shell_sanitize(s):
+    return shlex.quote(' '.join(shlex.split(s)))
+
+
+def main(argv):
+    ret = 0
+    env_var_prefix = argv[0].upper()
+    conf_filepaths = argv[1:]
+    config = configparser.ConfigParser()
+    parsed_conf_filepaths = config.read(conf_filepaths)
+    if len(parsed_conf_filepaths) != len(conf_filepaths):
+        logging.error(
+            "The following configuration files cannot be parsed:\n- {}".format(
+                "\n- ".join(set(conf_filepaths) - set(parsed_conf_filepaths))
+            )
+        )
+        ret = 1
+    for section in config.sections():
+        for option in config.options(section):
+            value = shell_sanitize(config.get(section, option))
+            print("export {}_{}_{}={}".format(
+                env_var_prefix,
+                section.upper().replace('-', '_'),
+                option.upper().replace('-', '_'),
+                value
+            ))
+    return ret
+
+
+if __name__ == "__main__":
+    try:
+        ret = main(sys.argv[1:])
+    except:
+        logging.exception("Unhandled error:")
+        ret = 1
+    sys.exit(ret)

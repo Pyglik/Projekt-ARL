@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+
+"""Script used to retrieve the list of drone parameters from a drone file
+"""
+
+from __future__ import print_function
+import xml.etree.ElementTree as ET
+import sys, os
+
+def get_drone_params(drone_file):
+    """Parse drone file and print its machine parameters
+    """
+    tree = ET.parse(drone_file)
+    root = tree.getroot()
+    for machine_params in root.iter('machine_params'):
+        print(' '.join(list(machine_params.attrib)))
+    # TODO kept for backward compatibility, to be removed
+    for sdf_params in root.iter('sdf_params'):
+        print(' '.join(list(sdf_params.attrib)))
+
+def main():
+    """Main function
+    """
+    if len(sys.argv) < 2:
+        sys.stderr.write("No drone file given\n")
+        sys.exit(1)
+    drone_file = sys.argv[1]
+
+    if os.path.isfile(drone_file):
+        get_drone_params(drone_file)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except:
+        sys.exit(1)

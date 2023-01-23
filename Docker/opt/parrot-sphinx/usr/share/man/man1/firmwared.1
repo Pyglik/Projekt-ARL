@@ -1,0 +1,260 @@
+.TH FIRMWARED 1
+.SH NAME
+firmwared \- Daemon for spawning and managing drone firmare instances
+.SH SYNOPSIS
+.B firmwared
+[\fICONFIGURATION_FILE\fR]
+.SH DESCRIPTION
+.B firmwared
+allows to create multiple instances of drone firmwares in containers and to
+manage their lifecycle.
+It is controlled by a socket, with libpomp for the protocol, so it can be used
+with a variety of language.
+A command line client,
+.BR fdc(1)
+is also available.
+If a
+.B CONFIGURATION_FILE
+argument is passed, it will be used to read the configuration, if not,
+.B firmwared
+will check if
+.I /etc/firmwared.conf
+exists and load it in this case.
+If no configuration file is found, default values or environment are used.
+.SH EXIT STATUS
+.B firmwared
+returns 0 on success and 1 on error.
+.SH ENVIRONMENT
+.TP
+.B FIRMWARED_APPARMOR_PROFILE
+If
+.RB $ FIRMWARED_APPARMOR_PROFILE
+is set, it will be used as an alternative implementation for the apparmor
+security profile pattern, used for protecting the host pc, from potentially
+harmful behavior of the instances, defaults to
+.RB $ FIRMWARED_RESOURCES_DIR/firmwared.apparmor.profile .
+.TP
+.B FIRMWARED_CONTAINER_INTERFACE
+If
+.RB $ FIRMWARED_CONTAINER_INTERFACE
+is set, it will be used as the name of the network interface created for the
+instances to communicate with the host, defaults to
+.BR eth0 ,
+must be less than 15 characters long.
+.TP
+.B FIRMWARED_CURL_HOOK
+If
+.RB $ FIRMWARED_CURL_HOOK
+is set, its value is used as the path to the helper executable responsible of
+copying the firmwares to the firmware repository, defaults to
+.BR /usr/libexec/firmwared/curl.hook .
+.TP
+.B FIRMWARED_PORT_HOOK
+If
+.RB $ FIRMWARED_PORT_HOOK
+is set, its value is used as the path to the helper executable responsible of
+reserving ports, defaults to
+.BR /usr/libexec/firmwared/port.hook .
+.TP
+.B FIRMWARED_VERSION_HOOK
+If
+.RB $ FIRMWARED_VERSION_HOOK
+is set, its value is used as the path to the helper executable responsible of
+displaying the version of firmwared, defaults to
+.BR /usr/libexec/firmwared/version.hook .
+.TP
+.B FIRMWARED_DISABLE_APPARMOR
+If
+.RB $ FIRMWARED_DISABLE_APPARMOR
+is set to
+.BR y ,
+AppArmor will not be used for protecting the host against potentially harmful
+behaviour of the instances.
+Please be aware that this is a dangerous option as it is likely to kill kittens,
+you have been warned, defaults to
+.BR n .
+.TP
+.B FIRMWARED_DUMP_PROFILE
+If
+.RB $ FIRMWARED_DUMP_PROFILE
+is set to
+.BR y ,
+the AppArmor profile used at each instance creation will be dumped to
+firmwared's standard error, defaults to
+.BR n .
+.TP
+.B FIRMWARED_HOST_INTERFACE_PREFIX
+If
+.RB $ FIRMWARED_HOST_INTERFACE_PREFIX
+is set, then it will be used as the prefix for building the interface name for
+the veth pair's end living in the host network namespace, defaults to
+.BR fd_veth ,
+must be less than 12 characters long.
+.TP
+.B FIRMWARED_MOUNT_HOOK
+If
+.RB $ FIRMWARED_MOUNT_HOOK
+is set, its value is used as the path to the helper executable responsible of
+mounting the union fs of an instance and of cleaning it, defaults to
+.BR /usr/libexec/firmwared/mount.hook .
+.TP
+.B FIRMWARED_MOUNT_PATH
+If
+.RB $ FIRMWARED_MOUNT_PATH
+is set, then the firmware workspaces, that is, their set of mount points, will
+be created in this directory.
+Under this directory the following subtree will be used :
+
+  +- /instance_sha1/
+                   |
+                   +- ro (read-only mount point of the firmware)
+                   +- rw (directory with the rw layer)
+                   +- union (union fs mount of ./rw upon ./ro)
+                   +- workdir (used internally by OverlayFS)
+
+defaults to
+.BR /var/cache/firmwared/mount_points/ .
+.TP
+.B FIRMWARED_NET_FIRST_TWO_BYTES
+If
+.RB $ FIRMWARED_NET_FIRST_TWO_BYTES
+is set, then it will be used as the prefix for building the IP addresses for the
+host and the container, defaults to
+.BR 10.202. ,
+must have the form 'X1.X2.' with X1 and X2 being two integers in [0, 255]
+inclusive.
+The host veth's end will have X1.X2.INSTANCE_ID.1/24 as its IP address and the
+instance's veth's end will have X1.X2.INSTANCE_ID.1/24.
+.TP
+.B FIRMWARED_NET_HOOK
+If
+.RB $ FIRMWARED_NET_HOOK
+is set, its value is used as the path to the helper executable responsible of
+creating the veth pair and configuring it, defaults to
+.BR /usr/libexec/firmwared/net.hook .
+.TP
+.B FIRMWARED_UDEV_HOOK
+If
+.RB $ FIRMWARED_UDEV_HOOK
+is set, its value is used as the path to the helper executable responsible of
+calling udev scripts for each instance, defaults to
+.BR /usr/libexec/firmwared/udev.hook .
+.TP
+.B FIRMWARED_POST_PREPARE_INSTANCE_HOOK
+If
+.RB $ FIRMWARED_POST_PREPARE_INSTANCE_HOOK
+is set, its value is used as the path to the helper executable responsible of
+applying the right permission and ownership to the firmware's files, defaults to
+.BR /usr/libexec/firmwared/post_prepare_instance.hook .
+.TP
+.B FIRMWARED_PREVENT_REMOVAL
+If
+.RB $ FIRMWARED_PREVENT_REMOVAL
+is set to
+.BR y ,
+after dropping an instance, its run artifacts will be preserved, that is, the
+FIRMWARED_MOUNT_PATH/instance_sha1 directory will
+.I not
+be destroyed, defaults to
+.BR n .
+.TP
+.B FIRMWARED_RESOURCES_DIR
+If
+.RB $ FIRMWARED_RESOURCES_DIR
+is set, its value is used as the path to the directory where the resource files
+used by
+.B firmwared
+are stored.
+There should be three files in this directory, names, adjectives and
+apparmor.profile, defaults to
+.BR /usr/share/firmwared/ .
+.TP
+.B FIRMWARED_REPOSITORY_PATH
+If
+.RB $ FIRMWARED_REPOSITORY_PATH
+is set, its value is used as the path to the directory in which the firmwares
+filesystem images are stored, defaults to
+.BR /usr/share/firmwared/firmwares/ .
+.TP
+.B FIRMWARED_SOCKET_PATH
+If
+.RB $ FIRMWARED_SOCKET_PATH
+is set, its value is used as the path to the socket used to control firmwared,
+defaults to
+.BR /var/run/firmwared.sock .
+.TP
+.B FIRMWARED_X11_PATH
+If
+.RB $ FIRMWARED_X11_PATH
+is set, its value is used as the path to the directory that contains the socket
+used to communicate with the X-Server, defaults to
+.BR /tmp/.X11-unix/ .
+.TP
+.B FIRMWARED_MAX_CACHED_FIRMWARES
+If
+.RB $ FIRMWARED_MAX_CACHED_FIRMWARES
+is set, its value is used as the maximal amount of firmware ext2 files that can
+be stored in firmwared cache, defaults to
+.BR 10 .
+.TP
+.B FIRMWARED_HOSTLIBS_PATHS
+If
+.RB $ FIRMWARED_HOSTLIBS_PATHS
+is set, it will be interpreted as a colon-delimited list of host system library
+paths to be mounted in the firmware and made accessible to it. It has the same
+format as LD_LIBRARY_PATH. Defaults to
+.BR /lib:/usr/lib .
+.TP
+.B FIRMWARED_VERBOSE_HOOK_SCRIPTS
+If
+.RB $ FIRMWARED_VERBOSE_HOOK_SCRIPTS
+is set to
+.BR y ,
+the hook scripts used, provided they are the stock ones, will log all the
+actions they take.
+The logs will occur in warning level, due to restrictions on the 'set' shell
+built-in.
+If you use custom hook scripts, you'll have to retrieve the last parameter value
+and to use the set -x command, to replicate this behavior.
+You can take the provided examples as examples on how to do so.
+Defaults to
+.BR n .
+.TP
+.B FIRMWARED_KEEP_FD_OPEN
+If
+.RB $ FIRMWARED_KEEP_FD_OPEN
+is set to
+.BR y ,
+firmwared will not close standard file descriptors and get early boxinit output
+on firmwared's stdout. This can be useful when an instance crashes immediately.
+Defaults to
+.BR n .
+
+.SH FILES
+.TP
+.I $FIRMWARED_MOUNT_HOOK
+Helper executable responsible of instances' mount points management.
+.TP
+.I $FIRMWARED_NET_HOOK
+Helper executable responsible of instances' network interfaces management.
+.TP
+.I $FIRMWARED_RESOURCES_DIR/names
+List of names, used in the generation of entities unique names.
+.TP
+.I $FIRMWARED_RESOURCES_DIR/adjectives
+List of adjectives, used in the generation of entities unique names.
+.TP
+.I $FIRMWARED_RESOURCES_DIR/firmwared.apparmor.profile
+Template AppArmor profile, used to protect the host machine from potentially
+dangerous behaviour of the instances.
+
+.SH BUGS
+.B firmwared
+is in its early stage and some bugs are may still be present.
+Please report any bug found.
+.SH AUTHORS
+Written by Nicolas Carrier <nicolas.carrier@parrot.com>.
+.SH SEE ALSO
+.BR fdc (1),
+.BR firmwared.conf (5),
+.BR apparmor (7),

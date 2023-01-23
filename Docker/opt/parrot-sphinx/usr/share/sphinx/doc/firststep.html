@@ -1,0 +1,303 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>First step &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to connect to the simulated drone" href="connectdrone.html" />
+    <link rel="prev" title="Installation procedure" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">First step</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#firmwared">Firmwared</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#check-that-firmwared-is-alive">Check that firmwared is alive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#check-your-wifi-interface-name">Check your wifi interface name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launch-your-first-simulation">Launch your first simulation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced topics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>First step</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="first-step">
+<h1>First step<a class="headerlink" href="#first-step" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="firmwared">
+<h2>Firmwared<a class="headerlink" href="#firmwared" title="Permalink to this headline">¶</a></h2>
+<p>For Linux distributions coming with
+<a class="reference external" href="http://en.wikipedia.org/wiki/Systemd">systemd</a>, Firmwared is installed as
+a systemd service. Therefore you just need to launch the service by entering
+the command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo systemctl start firmwared.service
+</pre></div>
+</div>
+<p>In case you reboot/start your computer, you need to restart the firmwared
+service.</p>
+<p>As for the old Linux distribution (namely Debian Jessie), firmwared needs to be
+launched manually from a shell:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sudo firmwared
+</pre></div>
+</div>
+<p>The execution of firmwared is blocking so do not close your shell.</p>
+</div>
+<div class="section" id="check-that-firmwared-is-alive">
+<h2>Check that firmwared is alive<a class="headerlink" href="#check-that-firmwared-is-alive" title="Permalink to this headline">¶</a></h2>
+<p>Enter the following command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> fdc ping
+<span class="go">PONG</span>
+</pre></div>
+</div>
+<p>You should get a <code class="docutils literal notranslate"><span class="pre">PONG</span></code> in response. Otherwise, check the
+<a class="reference internal" href="troubleshooting.html"><span class="doc">Troubleshooting</span></a> page.</p>
+</div>
+<div class="section" id="check-your-wifi-interface-name">
+<h2>Check your wifi interface name<a class="headerlink" href="#check-your-wifi-interface-name" title="Permalink to this headline">¶</a></h2>
+<p>Enter the following command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> iwconfig
+</pre></div>
+</div>
+<p>and remember your host wifi interface name (usualy “wlan0” or “wlx************”).
+You will need it in the next step.</p>
+<p>Simulated drones may use your host system wifi interface to communicate with the
+drone controller (e.g FreeFlight). For his own purpose, a simulated drone “steals”
+the host wifi interface. While the simulation is running, the wifi interface is
+only accessible from within the simulated firmware.</p>
+<p><strong>If you already use this interface for Internet access, you would be disconnected.</strong></p>
+</div>
+<div class="section" id="launch-your-first-simulation">
+<h2>Launch your first simulation<a class="headerlink" href="#launch-your-first-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Now that firmwared daemon is running, you just need to choose a .drone file
+and start Parrot-Sphinx with it.
+Several .drone files are provided along with the Parrot-Sphinx installation.
+They are located in <code class="docutils literal notranslate"><span class="pre">/opt/parrot-sphinx/usr/share/sphinx/drones/</span></code>.
+Let’s start Parrot-Sphinx with one of them. If your wifi interface name is “wlan0” just
+enter the following command to launch Parrot-Sphinx:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone
+</pre></div>
+</div>
+<p>Alternatively, you can modify the .drone file and change the stolen interface
+name “wlan0” to the actual name of your wifi interface. You can also override
+the default interface name from the command line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::stolen_interface<span class="o">=</span>&lt;your_interface_name&gt;:eth0:192.168.42.1/24
+</pre></div>
+</div>
+<p>As it is the first time Parrot-Sphinx is started with this .drone file, it may take
+several seconds to download the drone firmware from the external server.
+Once the firmware is loaded, the simulation starts and you should see something
+like below.</p>
+<a class="reference internal image-reference" href="_images/firststep.png"><img alt="_images/firststep.png" src="_images/firststep.png" style="width: 600px;" /></a>
+<p>You should now be able to establish a WiFi connection between your PC working as
+an access point and a smartphone running Freeflight (see
+<a class="reference internal" href="connectdrone.html"><span class="doc">How to connect to the simulated drone</span></a> for more information).</p>
+<p>To reset the simulation, on the <cite>Edit</cite> menu, go to <cite>Reset World</cite>, or hit
+<cite>Ctrl+R</cite>. To stop the simulation, hit <cite>Ctrl+C</cite> on the command line, or close the
+client.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="connectdrone.html" class="btn btn-neutral float-right" title="How to connect to the simulated drone" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation procedure" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

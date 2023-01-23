@@ -1,0 +1,96 @@
+#!/usr/bin/env python
+
+"""Hook invoked right after preparing the instance
+"""
+
+import sys, os, logging
+import subprocess
+
+def fix_stat(root_dir, firmware_dir):
+    """Fix native final tree ownership/permissions
+    """
+    # Create list of files in given root directory
+    filepaths = []
+    for (dirpath, _, filenames) in os.walk(root_dir):
+        for filename in filenames:
+            filepaths.append(os.path.relpath(os.path.join(dirpath, filename),
+                                             root_dir))
+
+    # Uses the fixstat.sh script to change the owner and permissions of all the
+    # files in the union fs of an instance.
+    # Designed to be used as the value of the post_prepare_instance_hook config
+    # key.
+    os.chdir(root_dir)
+    cmdline = os.path.join(firmware_dir, "..", "fixstat.sh")
+    try:
+        process = subprocess.Popen(cmdline, stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE,
+                                   shell=True)
+        lines = process.communicate(input="\n".join(filepaths))[0]
+        for line in lines.split("\n")[:-1]:
+            # tokenize the line at each semicolon
+            cols = line.split(";")
+
+            # remove the "blabla=" prefixes
+            cols = [cols[0]] + [c.split("=")[1] for c in cols[1:]]
+
+            # in mode, only the last 3 digits are meaningful
+            cols[1] = cols[1][-3:]
+
+            # the parsing is done, now apply
+            filepath = os.path.join(root_dir, cols[0])
+            if not os.path.islink(filepath):
+                logging.info("chmod '%s' '%s'", cols[1], filepath)
+                os.chmod(filepath, int(cols[1], 8))
+            logging.info("chown --no-dereference %s:%s %s", cols[2], cols[3],
+                         filepath)
+            os.lchown(filepath, int(cols[2]), int(cols[3]))
+        process.stdin.close()
+        if process.returncode != 0:
+            logging.error("%s failed with status %d", cmdline,
+                          process.returncode)
+    except OSError as ex:
+        logging.error("Failed to execute command: %s [err=%d %s]",
+                      cmdline, ex.errno, ex.strerror)
+
+def main():
+    """Main function
+    """
+    if len(sys.argv) < 2:
+        sys.stderr.write("No root path given\n")
+        sys.exit(1)
+    root_dir = sys.argv[1]
+
+    if len(sys.argv) < 3:
+        sys.stderr.write("No firmware path given\n")
+        sys.exit(1)
+    firmware_path = sys.argv[2]
+
+    if len(sys.argv) < 4:
+        sys.stderr.write("No verbose given\n")
+        sys.exit(1)
+    setupLog(sys.argv[3])
+
+    if os.path.isdir(firmware_path):
+        fix_stat(root_dir, firmware_path)
+
+def setupLog(verbose):
+    """Setup logging system
+    """
+    logging.basicConfig(
+        level=logging.WARNING,
+        format="[%(levelname)s] %(message)s",
+        stream=sys.stderr)
+    logging.addLevelName(logging.CRITICAL, "C")
+    logging.addLevelName(logging.ERROR, "E")
+    logging.addLevelName(logging.WARNING, "W")
+    logging.addLevelName(logging.INFO, "I")
+    logging.addLevelName(logging.DEBUG, "D")
+
+    # setup log level
+    if verbose == "y":
+        logging.getLogger().setLevel(logging.DEBUG)
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,173 @@
+#!/bin/bash
+
+NB_ARGS=9
+if [ "$#" -ne ${NB_ARGS} ]; then
+	echo "Wrong number of arguments ${0}: $# instead of ${NB_ARGS}"
+	exit -1
+fi
+
+set -e
+set -u
+
+action=${1}
+url=${2}
+firmware_repository=${3}
+uuid=${4}
+size=${5}
+uncompressed_size=${6}
+cachesize=${7}
+verbose=${8}
+dest_file=${9}
+
+if [ "${verbose}" = "y" ]; then
+	set -x
+fi
+
+# use option "insecure" to accept HTTPS connection with unverified certificat
+curl_command="curl --location --silent --insecure"
+curl_timeout="--max-time 20"
+
+export LANG=C
+
+# accept path without the file:// prefix /!\ it must be an absolute path
+if [ -f "${url}" ]; then
+	url="file://${url}"
+fi
+
+function curl_get_size()
+{
+	local tmp_file=$(mktemp --tmpdir=${firmware_repository})
+	local status=$(${curl_command} ${curl_timeout} --head ${url} \
+			--write-out '%{http_code}' --output ${tmp_file})
+	if [ ${status} -eq 200 ] || [ ${status} -eq 000 ]; then
+		# retrieve the size of the file
+		# note: tail is used to cope with potential redirection(s)
+		local size=$(cat ${tmp_file} |grep Content-Length| tail -n 1)
+		size=${size##*Content-Length: }
+		size=${size%%[[:space:]]*}
+		echo "${size}"
+	else
+		echo "received an unexpected response code: ${status} when trying to reach ${url}" > /dev/stderr
+	fi
+	rm -f ${tmp_file}
+}
+
+function curl_get_header()
+{
+	local tmp_file=$(mktemp --tmpdir=${firmware_repository})
+	# request first 2048 bytes
+	local status=$(${curl_command} ${curl_timeout} ${url} \
+			--write-out '%{http_code}' --output ${tmp_file} --range 0-2047)
+	if [ ${status} -eq 206 ] || [ ${status} -eq 000 ]; then
+		echo "${tmp_file}"
+	else
+		echo "received an unexpected response code: ${status} when trying to reach ${url}" > /dev/stderr
+	fi
+}
+
+function curl_get_uuid_from_zip()
+{
+	# request last 36 bytes which should contain the UUID
+	local status=$(${curl_command} ${curl_timeout} ${url} \
+			--write-out '%{http_code}' --output ${tmp_file} \
+			--range $((${size} - 36))-${size})
+	if [ ${status} -eq 206 ] || [ ${status} -eq 000 ]; then
+		uuid=$(cat ${tmp_file})
+		echo "${uuid}"
+	else
+		echo "received an unexpected response code: ${status} when trying to reach ${url}" > /dev/stderr
+	fi
+}
+
+if [ "${action}" = "probe" ]; then
+	size=$(curl_get_size)
+	echo "size=${size}"
+	tmp_file="$(curl_get_header)"
+	if [ ! -z ${tmp_file} ]; then
+		uuid=$(/sbin/blkid -c /dev/null -o value -s UUID ${tmp_file} || true)
+		if [ -z ${uuid} ]; then
+			# check if file is a zip archive
+			if [ "$(file --brief --mime-type ${tmp_file})" = "application/zip" ]; then
+				# read uncompressed size in header
+				uncompressed_size=$(od --address-radix=n -l --endian=little --skip-bytes=22 --read-bytes=4 ${tmp_file} | sed 's/ //g')
+				echo "uncompressed_size=${uncompressed_size}"
+				uuid=$(curl_get_uuid_from_zip)
+			fi
+		fi
+		echo "uuid=${uuid}"
+		rm -f ${tmp_file}
+	fi
+
+elif [ "${action}" = "fetch" ]; then
+	dest="${firmware_repository}/${dest_file}"
+
+	nbfw=$(find ${firmware_repository} -name "*.firmware"| wc -l)
+	nbtoremove=$((${nbfw} - ${cachesize} + 1))
+	# scan all files sorted by date, the oldest first
+	for f in $(ls -1rt ${firmware_repository}/*.firmware); do
+	# remove fw file only if not mounted
+		if [ -z "$(mount |grep $(basename "${f}") )" ]; then
+		# do we still have to reduce the amount of stored firmwares?
+			if [ "${nbtoremove}" -gt "0" ]; then
+				rm ${f}
+				nbtoremove=$((${nbtoremove} - 1))
+			else
+				break
+			fi
+		fi
+	done
+
+	if [ -e "${dest}" ]; then
+		echo "firmware already exists" > /dev/stderr
+	fi
+
+	retry_max=20
+	count=0
+
+	# Discard any previously downloaded file with the same uuid
+	downloaded_size=$(stat --printf="%s" "${dest}" || /bin/echo 0)
+	if [ "${downloaded_size}" -ne "0" ]; then
+		rm -f "${dest}"
+		downloaded_size=0
+	fi
+
+	total_size=$((uncompressed_size + size))
+
+	# Keep on downloading until completion or max retry is reached
+	downloaded_file=$(mktemp --tmpdir=${firmware_repository})
+	while true; do
+		count=$((count + 1))
+		if [ "$count" -ge "$retry_max" ]; then
+			exit -1
+		fi
+		${curl_command} ${url} -C ${downloaded_size} --output - | pv --numeric --size $((total_size-downloaded_size)) 2>&1 >> "${downloaded_file}"
+		downloaded_size=$(stat --printf="%s" "${downloaded_file}" || /bin/echo 0)
+		if [ "${size}" -eq "${downloaded_size}" ]; then
+			break
+		else
+			sleep 1
+		fi
+	done
+
+	if [ "$(file --brief --mime-type ${downloaded_file})" = "application/zip" ]; then
+		# decompress zip file
+		tmp_file=$(mktemp --tmpdir=${firmware_repository})
+		unzip -pqq ${downloaded_file} | pv --numeric --bytes 2>&1 > ${tmp_file} | while read bytes; do percent=$(((bytes + size) * 100 / total_size)) && echo $percent; done
+		status=$?
+		rm -f ${downloaded_file}
+		if [ ${status} -eq 1 ]; then
+			echo "warning errors were encountered, but processing completed successfully anyway"
+		elif [ ${status} -eq 2 ]; then
+			echo "a generic error in the zipfile format was detected. Processing may have completed successfully anyway"
+		elif [ ${status} -ge 3 ]; then
+			echo "failed to unzip ${tmp_file}"
+			rm -f ${tmp_file}
+			exit -1
+		fi
+		mv ${tmp_file} ${dest}
+	else
+		mv ${downloaded_file} ${dest}
+	fi
+fi
+
+exit 0

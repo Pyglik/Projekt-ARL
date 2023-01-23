@@ -1,0 +1,61 @@
+#!/bin/bash
+
+NB_ARGS=7
+if [ "$#" -ne ${NB_ARGS} ]; then
+    echo "Missing arguments to ${0}: $# < ${NB_ARGS}"
+    exit -1
+fi
+
+set -e
+
+action=${1}
+instance_sha1=${2}
+wrapped_program_path=${3}
+program_path=${4}
+udevrule_template_path=${5}
+udevrule_path=${6}
+verbose=${7}
+
+if [ "${verbose}" = "y" ]; then
+	set -x
+fi
+
+set -u
+
+case $action in
+setup )
+	# Install the program wrapper to setup environment variables for the
+	# udev program
+	INSTANCE_SHA1=$instance_sha1
+	cat > $program_path<<-===EndOfHeredoc===
+	#!/bin/bash
+	export INSTANCE_SHA1=$INSTANCE_SHA1
+	# udev has its own private mount namespace. nsenter is used to enter the
+	# mount namespace of pid 1 where we can have access to the firmware
+	# filesystem where the script is located.
+	nsenter --mount -t 1 $wrapped_program_path \$*
+	===EndOfHeredoc===
+
+	# Install the udev rule
+	UDEV_PROGRAM_PATH=$program_path
+	cat $udevrule_template_path | \
+		sed "s#@UDEV_PROGRAM_PATH@#${UDEV_PROGRAM_PATH}#g" \
+		> $udevrule_path
+
+	# reload host udev
+	udevadm control --reload
+;;
+cleanup )
+	# Uninstall the program wrapper and the udev rule
+	rm $program_path
+	rm $udevrule_path
+
+	# Reload host udev
+	udevadm control --reload
+;;
+* )
+	echo "wrong action string \"$action\""
+	exit 1
+;;
+esac
+

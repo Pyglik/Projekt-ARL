@@ -1,0 +1,14 @@
+{
+  "index.css": "static/css/index.css",
+  "index.js": "static/js/index.js",
+  "inspector.css": "static/css/inspector.css",
+  "inspector.js": "static/js/inspector.js",
+  "map.css": "static/css/map.css",
+  "map.js": "static/js/map.js",
+  "plot.css": "static/css/plot.css",
+  "plot.js": "static/js/plot.js",
+  "static/media/icomoon.eot?2j2h4x": "static/media/icomoon.eot",
+  "static/media/icomoon.svg?2j2h4x": "static/media/icomoon.svg",
+  "static/media/icomoon.ttf?2j2h4x": "static/media/icomoon.ttf",
+  "static/media/icomoon.woff?2j2h4x": "static/media/icomoon.woff"
+}

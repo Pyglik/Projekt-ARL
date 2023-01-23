@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export ROS_IP=192.168.0.61
+export ROS_MASTER_URI=http://192.168.0.61:11311
+
+cd /home/bebop2/Desktop
+sudo ./sphinx.sh
+sleep 10
+gnome-terminal -- ./bebop_autonomy.sh
+cd /home/bebop2/catkin_ws/src/g2rr/scripts
+python3 g2r_republisher_node.pyc bebop2

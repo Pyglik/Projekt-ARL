@@ -1,0 +1,489 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Change logs &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="What is Parrot-Sphinx" href="whatissphinx.html" />
+    <link rel="prev" title="Parrot-Sphinx guide book" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Change logs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-8">Version 1.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-7-2">Version 1.7.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-7-1">Version 1.7.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-6-1">Version 1.6.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-6">Version 1.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-5">Version 1.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-4">Version 1.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-3">Version 1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-2-1">Version 1.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-1">Version 1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-1-0">Version 1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-30">Version 0.30</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-29-1">Version 0.29.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-28">Version 0.28</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-27-1">Version 0.27.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-26">Version 0.26</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-25-1">Version 0.25.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-24">Version 0.24</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-23-1">Version 0.23.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-22">Version 0.22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-21-1">Version 0.21.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-20">Version 0.20</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-19-1">Version 0.19.1</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced topics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Change logs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="change-logs">
+<h1>Change logs<a class="headerlink" href="#change-logs" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-8">
+<h2>Version 1.8<a class="headerlink" href="#version-1-8" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="version-1-7-2">
+<h2>Version 1.7.2<a class="headerlink" href="#version-1-7-2" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="version-1-7-1">
+<h2>Version 1.7.1<a class="headerlink" href="#version-1-7-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[misc] fix various minor issues.</p></li>
+</ul>
+</div>
+<div class="section" id="version-1-6-1">
+<h2>Version 1.6.1<a class="headerlink" href="#version-1-6-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[wifi] Support Anafi Thermal as Wifi dongle. This requires a firmware version
+1.6.4 or higher.</p></li>
+<li><p>[misc] fix various minor issues.</p></li>
+</ul>
+</div>
+<div class="section" id="version-1-6">
+<h2>Version 1.6<a class="headerlink" href="#version-1-6" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[cmdline] new option to start sphinx with an arbitrary simulated time (instead
+of zero)</p></li>
+<li><p>[misc] various minor bug fixes and optimizations</p></li>
+</ul>
+</div>
+<div class="section" id="version-1-5">
+<h2>Version 1.5<a class="headerlink" href="#version-1-5" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[system] some fixes to fully work with firmwares built on debian buster</p></li>
+<li><p>[cmdline] –datalog is activated by default. Replaced by –nodatalog.</p></li>
+</ul>
+</div>
+<div class="section" id="version-1-4">
+<h2>Version 1.4<a class="headerlink" href="#version-1-4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[system] support of Debian Buster (Debian 10)</p></li>
+<li><p>[cmdline] –datalog is activated by default. Replaced by –nodatalog.</p></li>
+</ul>
+</div>
+<div class="section" id="version-1-3">
+<h2>Version 1.3<a class="headerlink" href="#version-1-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[wifi] You can now use anafi as a wifi dongle (something was missing in
+previous version).</p></li>
+<li><p>[tools] parrot-gz is now installed in your PATH.</p></li>
+</ul>
+<ul class="simple">
+<li><p>[doc] Current guidebook updated with new pictures. Mentions to Freeflight Pro
+replaced by Freeflight 6.</p></li>
+</ul>
+</div>
+<div class="section" id="version-1-2-1">
+<h2>Version 1.2.1<a class="headerlink" href="#version-1-2-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[wifi] You can now use anafi as a wifi dongle (see system requirements).</p></li>
+<li><p>[anafi] Anafi is now supported.</p></li>
+<li><p>[world] 3 new worlds added.</p></li>
+</ul>
+<ul class="simple">
+<li><p>[cmdline] New option to start a simulation with physics engine disabled.
+(<code class="docutils literal notranslate"><span class="pre">--</span> <span class="pre">disable-physics</span></code>)</p></li>
+</ul>
+</div>
+<div class="section" id="version-1-1">
+<h2>Version 1.1<a class="headerlink" href="#version-1-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[license] display license agreement upon installation, in command line help,
+and in user guide.</p></li>
+</ul>
+<ul class="simple">
+<li><p>[system] Debian Jessie is no longer supported. As of Parrot-Sphinx 1.1,
+Ubuntu Xenial, Ubuntu Bionic and Debian Stretch are supported.</p></li>
+<li><p>[system] world reset can be performed via the web dashboard.
+See world/fwman/fwman/action/world_reset_all.</p></li>
+<li><p>[doc] new user guide section about how to use Parrot-Sphinx with VirtualBox</p></li>
+</ul>
+</div>
+<div class="section" id="version-1-0">
+<h2>Version 1.0<a class="headerlink" href="#version-1-0" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[camera] several improvements on stability</p></li>
+<li><p>[omniscient] in telemetry section omniscient, add last collision time</p></li>
+<li><p>[world] several new 3D models</p></li>
+<li><p>[web dashboard] more robust to world reset, better stability</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-30">
+<h2>Version 0.30<a class="headerlink" href="#version-0-30" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[worlds] wind plugin is now added in all worlds included in the installation
+package.</p></li>
+<li><p>[web-dashboard] in widget inspector, position of plugin name and plugin type
+have been inverted to have a clearer menu tree.</p></li>
+<li><p>[JSONRPC] new method <code class="docutils literal notranslate"><span class="pre">GetInfo</span></code> in the JsonRpc protocol. See
+<a class="reference external" href="pluginctrl_ifaces.html#available-methods">section</a>.</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-29-1">
+<h2>Version 0.29.1<a class="headerlink" href="#version-0-29-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[anafi] Ready to run Anafi (firmware for Parrot-Sphinx to be released soon)</p></li>
+</ul>
+<ul class="simple">
+<li><p>[world] add “flat land”</p></li>
+<li><p>[expressions] upgraded interpreter for mathematical expressions to change
+drone internals</p></li>
+<li><p>[misc] several stabilility improvements</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-28">
+<h2>Version 0.28<a class="headerlink" href="#version-0-28" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[system] <strong>Ubuntu Bionic added to the supported distributions.</strong></p></li>
+<li><p>[system] <strong>Ubuntu Trusty and Wily removed from the supported distributions.</strong></p></li>
+<li><p>[dashboard] some minor improvements in the web dashboard</p></li>
+<li><p>[system] better reliability of world reset</p></li>
+<li><p>[dashboard] ability to set initial drone position for the next reset.
+See <a class="reference external" href="pluginctrl_howtos.html#how-to-change-initial-drone-position-for-next-world-reset">this section</a></p></li>
+</ul>
+</div>
+<div class="section" id="version-0-27-1">
+<h2>Version 0.27.1<a class="headerlink" href="#version-0-27-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[system] at startup, check that Parrot-Sphinx and firmwared are running the same
+version. This avoids malfunctions after updating Parrot-Sphinx.</p></li>
+<li><p>[misc] various bug fixes.</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-26">
+<h2>Version 0.26<a class="headerlink" href="#version-0-26" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[drone files] In ‘.drone’ files, ‘sdf_params’ are renamed ‘machine_params’</p></li>
+<li><p>[cameras] ability to add gaussian noise on video images from any camera</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-25-1">
+<h2>Version 0.25.1<a class="headerlink" href="#version-0-25-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[real-time] robust to very slow real-time factors (&lt; 1%) and
+slightly improve speed.</p></li>
+<li><p>[cmdline] ability to suppress a drone parameter by setting it empty. Example
+to disable the wifi interface:
+<code class="docutils literal notranslate"><span class="pre">sphinx</span> <span class="pre">bebop2.drone::stolen_interface=''</span></code></p></li>
+<li><p>[bug] dashboard’s http port was incremented for no reason at each simulation
+run.</p></li>
+<li><p>[bug] Gazebo HMI in remote mode was broken.</p></li>
+<li><p>[GPS] add Geoid separation information in NMEA packets</p></li>
+<li><p>[drones] chimera is renamed into “Bluegrass”</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-24">
+<h2>Version 0.24<a class="headerlink" href="#version-0-24" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[system] It is now possible to run several instances of Parrot-Sphinx in parallel.</p></li>
+<li><p>[cmdline] new argument in the command line to set the web dashboad port
+(<code class="docutils literal notranslate"><span class="pre">--http-port=</span></code>) and the gazebo HMI’port (<code class="docutils literal notranslate"><span class="pre">--hmi-port=</span></code>)</p></li>
+<li><p>[real-time] new argument in the command line to set the real-time factor
+(<code class="docutils literal notranslate"><span class="pre">--rt-percent</span></code>). More info in Parrot-Sphinx’s help text (<code class="docutils literal notranslate"><span class="pre">sphinx</span> <span class="pre">--help</span></code>).</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-23-1">
+<h2>Version 0.23.1<a class="headerlink" href="#version-0-23-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[firmwares] new format available for the firmware files: <code class="docutils literal notranslate"><span class="pre">.ext2.zip</span></code>.
+Obviously, these files are much smaller than former .ext2. Note that .ext2
+files are still supported.</p></li>
+<li><p>[system] remove all subprocesses in case of brutal exit</p></li>
+<li><p>[system] fix some compatibility issue with Debian distributions.</p></li>
+<li><p>[debug] fix camera rotation when activating ‘follow’ camera mode
+more than once</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-22">
+<h2>Version 0.22<a class="headerlink" href="#version-0-22" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[command line] removed option <code class="docutils literal notranslate"><span class="pre">-V,</span> <span class="pre">--enable-video</span></code>. As of this version, Parrot-Sphinx
+enables all camera sensors. If your configuration is not suited for
+GPU-consuming cameras, you can disable these sensors by specifying drone
+options like “with_front_cam=false” in command line or in ‘.drone’ file.</p></li>
+<li><p>[command line] to fix HMI freeze when a network interface gets lost, the
+option <code class="docutils literal notranslate"><span class="pre">--interface</span></code> is introduced to put Parrot-Sphinx in remote mode
+(<a class="reference internal" href="remote.html"><span class="doc">Running Parrot-Sphinx remotely</span></a>)</p></li>
+<li><p>[spawn point] all provided worlds come with one or more positions describing
+where a drone can be spawned. More info in <a class="reference internal" href="dronefile.html"><span class="doc">Anatomy of a ‘.drone’ file</span></a> and
+<a class="reference internal" href="worldfile.html"><span class="doc">Anatomy of a ‘.world’ file</span></a></p></li>
+<li><p>[Bebop-Pro Thermal] ready to support Bebop Thermal firmware</p></li>
+<li><p>[Bebop 2 Power] new HD battery supported (see drone option
+<code class="docutils literal notranslate"><span class="pre">--with_hd_battery</span></code>)</p></li>
+<li><p>[web dashboard] add button to export PNG picture of plot window.</p></li>
+<li><p>[world] new world stonehenge added.</p></li>
+<li><p>[world] set real GPS position for 3D-scanned worlds</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-21-1">
+<h2>Version 0.21.1<a class="headerlink" href="#version-0-21-1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[handling] new plugin “Handling” available. It lets the user virtually
+manipulate the drone while it is off. Useful for calibration or hand-takeoff.</p></li>
+<li><p>[network QoS] like in former versions, network QoS can be adjusted at
+runtime via the web dashboard. This way, it is possible to break the
+communication with the drone controller at any time.</p></li>
+<li><p>[HMI] Fix user camera position when leaving “Follow” mode.</p></li>
+<li><p>[world] new world cloverleaf_interchange</p></li>
+<li><p>[minidrones] params swing_color, evo_type, evo_style are now treated as
+sdf_params.</p></li>
+<li><p>[dashboard] add editor widget in order to edit complex fields from Inspector.</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-20">
+<h2>Version 0.20<a class="headerlink" href="#version-0-20" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[system] add support for Debian stretch</p></li>
+<li><p>[minidrones] fix a bluetooth issue on Linux kernels 4.8+</p></li>
+<li><p>[system] improve Parrot-Sphinx stability</p></li>
+</ul>
+</div>
+<div class="section" id="version-0-19-1">
+<h2>Version 0.19.1<a class="headerlink" href="#version-0-19-1" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>[dashboard] New widget <em>Map</em>! Drone trajectories are drawn on Google Map
+in real time. The target in FollowMe mode is also supported by this widget.
+Check that <a class="reference external" href="visualization.html#sphinx-dashboard">section</a> for more info.</p></li>
+<li><p>[Sequoia] Support USB plugin of physical Sequoia. Simulated drones
+(like Disco) can communicate with it at runtime.</p></li>
+<li><p>[system] support kernel 4.8+</p></li>
+<li><p>[API] sdf params can now be overridden from command line.
+Autocompletion is also supported. Example:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx -V bebop2.drone::low_gpu<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="whatissphinx.html" class="btn btn-neutral float-right" title="What is Parrot-Sphinx" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Parrot-Sphinx guide book" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

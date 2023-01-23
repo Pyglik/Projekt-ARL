@@ -1,0 +1,94 @@
+#!/bin/bash
+
+set -eu
+
+SUPPORTED_PIDS="6001 6002"
+PARROT_VENDOR_ID="19cf"
+
+USB_DEVICES_PATH="/sys/bus/usb/devices"
+USB_DEVICES=$(ls "${USB_DEVICES_PATH}")
+
+BLOCK_DEVICES_PATH="/sys/block"
+BLOCK_DEVICES=$(ls "${BLOCK_DEVICES_PATH}")
+
+MOUNT_FOLDER=""
+
+# Possible cause of getting nothing: the drone storage must be mounted on Ubuntu.
+
+for usb_device in ${USB_DEVICES}
+do
+  if [[ -f "${USB_DEVICES_PATH}/${usb_device}/idVendor"
+    && -f "${USB_DEVICES_PATH}/${usb_device}/idProduct" ]]
+  then
+    VID=$(cat "${USB_DEVICES_PATH}/${usb_device}/idVendor")
+    PID=$(cat "${USB_DEVICES_PATH}/${usb_device}/idProduct")
+    if [ "${PARROT_VENDOR_ID}" == "${VID}" ] &&
+        echo ${SUPPORTED_PIDS} | grep ${PID} > /dev/null
+    then
+      DRONE_USB_PORT=$(readlink -f "${USB_DEVICES_PATH}/${usb_device}")
+
+      for block_device in ${BLOCK_DEVICES}
+      do
+        BLOCK_DEVICE_PATH=$(readlink -f "${BLOCK_DEVICES_PATH}/${block_device}")
+        if [[ "${BLOCK_DEVICE_PATH}" == "${DRONE_USB_PORT}"* ]]
+        then
+          if grep "^/dev/${block_device}" /proc/mounts &>/dev/null ; then
+            MOUNT_LINE=$(grep "^/dev/${block_device}" /proc/mounts)
+          else
+            MOUNT_LINE=""
+          fi
+          if [[ -n "${MOUNT_LINE}" ]]
+          then
+            MOUNT_FOLDER=$(echo "${MOUNT_LINE}" | cut -d\  -f2)
+            break
+          fi
+        fi
+      done
+    fi
+  fi
+done
+
+if [[ -z "${MOUNT_FOLDER}" ]]
+then
+  cat << EoM
+Parrot drone not found or not compatible.
+Please make sure the drone is connected and echo the storage is *mounted*.
+EoM
+  exit 1
+fi
+
+sphinx_bin=$(readlink -f $(which sphinx))
+sphinx_bin_dir=$(dirname "${sphinx_bin}")
+sphinx_usr_dir="$(dirname "${sphinx_bin_dir}")"
+
+pushd "${sphinx_bin_dir}" &>/dev/null
+. ./sphinx-conf &>/dev/null
+popd &>/dev/null
+
+DRONE_SDCARD_DIR=${MOUNT_FOLDER}
+
+env|grep "\bSPHINX_" > "${DRONE_SDCARD_DIR}/sphinx.env"
+
+# force sync to unplug the drone "safely".
+sync
+
+if [[ -e "${DRONE_SDCARD_DIR}/sphinx.env" ]]
+then
+  cat << EoM
+ -- Drone fully configured --
+
+Now please unplug the drone, wait at least 5 seconds, then replug the drone.
+You should see a new network interface in your computer named 'sphx_ana_XXXX.'
+Please note that this interface can take some seconds to appear.
+
+Once the new network interface is visible, you can launch Sphinx with
+any drone model, taking care of setting the stolen interface to
+'sphx_ana_XXXX:eth0:192.168.42.1/24'.
+
+To connect the simulated drone, you can use FreeFlight on your phone
+and connect to a WiFi network named 'ANAFI-???XXXX' where XXXX
+are the final characters of 'sphx_ana_XXXX'.
+EoM
+else
+  echo "The drone configuration failed."
+fi

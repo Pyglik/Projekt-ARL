@@ -1,0 +1,349 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tuning of drone internals at runtime - Howtos &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="Tuning of drone internals at runtime - interfaces" href="pluginctrl_ifaces.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tuning of drone internals at runtime - Howtos</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-emulate-network-packet-loss">How to emulate network packet loss?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-play-with-wind">How to play with wind?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-modify-runtime-parameters-before-firmware-startup">How to modify runtime parameters before firmware startup?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-start-a-simulation-with-current-system-clock">How to start a simulation with current system clock?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-change-initial-drone-position-for-next-world-reset">How to change initial drone position for next world reset</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="advanced_topics.html">Advanced topics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tuning of drone internals at runtime - Howtos</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tuning-of-drone-internals-at-runtime-howtos">
+<h1>Tuning of drone internals at runtime - Howtos<a class="headerlink" href="#tuning-of-drone-internals-at-runtime-howtos" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-to-emulate-network-packet-loss">
+<h2>How to emulate network packet loss?<a class="headerlink" href="#how-to-emulate-network-packet-loss" title="Permalink to this headline">¶</a></h2>
+<p>Parrot-Sphinx exposes <code class="docutils literal notranslate"><span class="pre">iplink</span></code> components to control firmware network QoS at runtime.
+For each network interface of a firmware, Parrot-Sphinx creates an
+<code class="docutils literal notranslate"><span class="pre">&lt;interface_name&gt;/iplink</span></code> component with the following runtime parameters
+for both ingress and egress traffic:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>percentage of lost packets: <code class="docutils literal notranslate"><span class="pre">in_loss_percent</span></code> and <code class="docutils literal notranslate"><span class="pre">out_loss_percent</span></code></p></li>
+<li><p>percentage of corrupted packets: <code class="docutils literal notranslate"><span class="pre">in_corrupt_percent</span></code>
+and <code class="docutils literal notranslate"><span class="pre">out_corrupt_percent</span></code></p></li>
+<li><p>packet transmission delay in milliseconds: <code class="docutils literal notranslate"><span class="pre">ìn_delay_ms</span></code>
+and <code class="docutils literal notranslate"><span class="pre">out_delay_ms</span></code></p></li>
+<li><p>packet transimision delay variation in milliseconds
+<code class="docutils literal notranslate"><span class="pre">in_delay_variation_ms</span></code> and <code class="docutils literal notranslate"><span class="pre">out_delay_variation_ms</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>To disable all communications of an interface, just set a 100% packet loss for
+both ingress and egress traffic for this interface.</p>
+<dl class="simple">
+<dt>Typically a drone has two available network interfaces:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">eth0</span></code>: the drone wifi access point interface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eth1</span></code>: the drone virtual ethernet interface accessible at 10.202.0.1 from
+the host</p></li>
+</ul>
+</dd>
+</dl>
+<p>See  <code class="docutils literal notranslate"><span class="pre">interface</span></code> and <code class="docutils literal notranslate"><span class="pre">stolen_interface</span></code> elements in the <code class="docutils literal notranslate"><span class="pre">drone</span></code> section of
+your .drone file (<a class="reference internal" href="dronefile.html"><span class="doc">Anatomy of a ‘.drone’ file</span></a>) to get the actual names of your drone net
+interfaces.</p>
+</div>
+<div class="section" id="how-to-play-with-wind">
+<h2>How to play with wind?<a class="headerlink" href="#how-to-play-with-wind" title="Permalink to this headline">¶</a></h2>
+<p>Pretty simple.</p>
+<p>If not already present, add the wind plugin in your world file. The lines below
+need to be located AFTER the plugin fwman.
+Otherwise, the controls via JSON-RPC will not be available.</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;plugin</span> <span class="na">name=</span><span class="s">&quot;fwman&quot;</span> <span class="na">filename=</span><span class="s">&quot;libsphinx_fwman.so&quot;</span><span class="nt">&gt;</span>
+  ....
+  ....
+<span class="nt">&lt;/plugin&gt;</span>
+
+<span class="c">&lt;!-- Load the plugin for the wind --&gt;</span>
+<span class="nt">&lt;plugin</span> <span class="na">name=</span><span class="s">&quot;wind&quot;</span> <span class="na">filename=</span><span class="s">&quot;libsphinx_wind.so&quot;</span><span class="nt">&gt;</span>
+
+  <span class="c">&lt;!-- Wind mean speed in m/s --&gt;</span>
+  <span class="nt">&lt;magnitude_mean&gt;</span>0.0<span class="nt">&lt;/magnitude_mean&gt;</span>
+  <span class="c">&lt;!-- Wind mean direction in decimal degrees --&gt;</span>
+  <span class="nt">&lt;direction_mean&gt;</span>0.0<span class="nt">&lt;/direction_mean&gt;</span>
+  <span class="c">&lt;!-- Wind mean elevation in decimal degrees --&gt;</span>
+  <span class="nt">&lt;elevation_mean&gt;</span>0.0<span class="nt">&lt;/elevation_mean&gt;</span>
+
+  <span class="c">&lt;!-- Lowpass filter time characteristics in seconds.</span>
+<span class="c">       A value of 0 seconds deactivate the filter. --&gt;</span>
+  <span class="nt">&lt;magnitude_time_for_rise&gt;</span>10.0<span class="nt">&lt;/magnitude_time_for_rise&gt;</span>
+  <span class="nt">&lt;direction_time_for_rise&gt;</span>30.0<span class="nt">&lt;/direction_time_for_rise&gt;</span>
+  <span class="nt">&lt;elevation_time_for_rise&gt;</span>0.0<span class="nt">&lt;/elevation_time_for_rise&gt;</span>
+
+  <span class="c">&lt;!-- Wind expressions where &quot;val&quot; is the mean value. --&gt;</span>
+  <span class="c">&lt;!-- Example: The following defines an horizontal sinusoidal wind with</span>
+<span class="c">       an orientation that turns 360° every 60 seconds. Note that the mean</span>
+<span class="c">       direction and mean elevation are unused. --&gt;</span>
+  <span class="nt">&lt;magnitude_expr&gt;</span>val*(1+0.05*sin(2*pi*time/15))<span class="nt">&lt;/magnitude_expr&gt;</span>
+  <span class="nt">&lt;direction_expr&gt;</span>360*time/60<span class="nt">&lt;/direction_expr&gt;</span>
+  <span class="nt">&lt;elevation_expr&gt;</span>0.03*noise()<span class="nt">&lt;/elevation_expr&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</pre></div>
+</div>
+<p>Now, you can start a simulation. Then, use either the web interface or
+the command line in order to change wind properties at runtime.
+Note that the wind plugin is NOT attached to any drone.
+Therefore, it belongs by default to a drone called <code class="docutils literal notranslate"><span class="pre">world</span></code>.</p>
+<p>For example, to set the speed mean to 5.0 m/s:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">echo</span> <span class="s1">&#39;{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;SetParameter&quot;, \</span>
+<span class="s1">&quot;params&quot;: {&quot;machine&quot;:&quot;world&quot;, &quot;object&quot;:&quot;wind/wind&quot;, &quot;parameter&quot;:&quot;magnitude_mean&quot;, &quot;value&quot;:&quot;5.0&quot;}, &quot;id&quot;: 1}&#39;</span><span class="se">\</span>
+ <span class="p">|</span> nc -U &lt;path/to/unix/socket&gt; <span class="p">|</span> python -m json.tool
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-to-modify-runtime-parameters-before-firmware-startup">
+<h2>How to modify runtime parameters before firmware startup?<a class="headerlink" href="#how-to-modify-runtime-parameters-before-firmware-startup" title="Permalink to this headline">¶</a></h2>
+<p>This section shows how to set up runtime parameters before the
+firmware starts up. This way, we can check the firmware initialization with
+custom parameter values.</p>
+<p>First, you need to start Parrot-Sphinx with the <code class="docutils literal notranslate"><span class="pre">-U</span></code> (<code class="docutils literal notranslate"><span class="pre">--pause-firmware</span></code>) option.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx -U empty.world
+</pre></div>
+</div>
+<p>Once Parrot-Sphinx is started, all runtime parameters are accessible and can be
+modified even though the firmware is waiting to be launched.</p>
+<p>Finally, you just have to start your firmware by sending the <code class="docutils literal notranslate"><span class="pre">start_firmwares</span></code>
+<em>action</em>, located in <code class="docutils literal notranslate"><span class="pre">world/fwman/fwman/actions</span></code>. This can be achieved either
+from the web interface, or using the command line:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> <span class="nb">echo</span> <span class="s1">&#39;{&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;method&quot;: &quot;TriggerAction&quot;, &quot;params&quot;:\</span>
+<span class="s1">{&quot;machine&quot;:&quot;world&quot;, &quot;object&quot;:&quot;fwman/fwman&quot;, &quot;action&quot;:&quot;start_firmwares&quot;},\</span>
+<span class="s1">&quot;id&quot;: 1}&#39;</span> <span class="p">|</span> curl -d @- http://localhost:&lt;port&gt; <span class="p">|</span> python -m json.tool
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-to-start-a-simulation-with-current-system-clock">
+<h2>How to start a simulation with current system clock?<a class="headerlink" href="#how-to-start-a-simulation-with-current-system-clock" title="Permalink to this headline">¶</a></h2>
+<p>You need to start Parrot-Sphinx with the <code class="docutils literal notranslate"><span class="pre">--time</span></code> option set to the current
+date in seconds since the Unix epoch:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> sphinx --time<span class="o">=</span><span class="k">$(</span>date +%s<span class="k">)</span> /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-to-change-initial-drone-position-for-next-world-reset">
+<h2>How to change initial drone position for next world reset<a class="headerlink" href="#how-to-change-initial-drone-position-for-next-world-reset" title="Permalink to this headline">¶</a></h2>
+<p>As already told in previous section, the initial drone position can be
+configured using either Parrot-Sphinx command line, or editing the .drone file.</p>
+<p>It is possible to change this starting position so the drone gets spawn at a
+different position <em>after a world reset</em>. To do that, just put the name of a
+spawn point defined within your world, or the explicit 6-number pose, in the
+parameter located at <code class="docutils literal notranslate"><span class="pre">fwman/fwman/initial_pose</span></code>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pluginctrl_ifaces.html" class="btn btn-neutral float-left" title="Tuning of drone internals at runtime - interfaces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

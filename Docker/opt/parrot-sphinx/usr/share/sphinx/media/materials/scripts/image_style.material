@@ -1,0 +1,31 @@
+vertex_program Sphinx/ImageStylePlogVS glsl
+{
+  source ../programs/GLSL/image_style_plog_vs.glsl
+}
+
+fragment_program Sphinx/ImageStylePlogFS glsl
+{
+  source ../programs/GLSL/image_style_plog_fs.glsl
+}
+
+material Sphinx/ImageStylePlog
+{
+  technique
+  {
+    pass
+    {
+      vertex_program_ref Sphinx/ImageStylePlogVS { }
+      fragment_program_ref Sphinx/ImageStylePlogFS
+      {
+        param_named map int 0
+      }
+
+      texture_unit RT
+      {
+        tex_coord_set 0
+        tex_address_mode clamp
+        filtering linear linear linear
+      }
+    }
+  }
+}

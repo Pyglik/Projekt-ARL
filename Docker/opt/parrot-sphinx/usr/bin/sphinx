@@ -1,0 +1,692 @@
+#!/bin/bash
+
+if [ -n "${V}" ]; then
+    set -x
+fi
+set -eu
+
+sphinx_user="$(id --name --user)"
+
+if [ "${sphinx_user}" = "root" ]; then
+    # user is root, do nothing
+    :
+elif id -nG | grep -qw "firmwared"; then
+    # user is in the firmwared group, do nothing
+    :
+else
+    echo "You should be a member of the firmwared group to run sphinx."
+    echo "Please run the following command to add it. You will need to"
+    echo "log out / log in for this new group membership to be effective."
+    echo "sudo usermod -a -G firmwared ${sphinx_user}"
+    exit 1
+fi
+
+# find what is the root, from which sphinx is installed
+root="$(cd "$(dirname "$0")"; pwd -P)"
+root=${root%usr/bin}
+
+# Load sphinx configuration files
+source "${root}/usr/bin/sphinx-conf" > /dev/null
+
+# Setting PATH is necessary for the shell to find sphinx commands and because
+# gazebo does execvp("gzserver") and execvp("gzclient")
+export PATH=${root}usr/bin:${PATH}
+
+DATALOG=true
+DISPLAY_VERSION=false
+ENABLE_FPE=false
+TELEMETRY_OUTPUTDIR=${SPHINX_HOME}/telemetrylogs
+TELEMETRY_RATE=50   # 50 ms (to get a smooth scrolling on KST)
+GAZEBO_ARGS=()
+STARTUP_PAUSE=false
+SPHINX_GAZEBO_VERSION=$(gzserver -v | sed -n 1p | sed 's/[^0-9.]*\([0-9]*\.[0-9]*\).*/\1/')
+SPHINX_MODEL_DATABASE_URI="http://plf.parrot.com/sphinx/external_models"
+SPHINX_WEB_CLIENT_DIR=$(dirname "$(readlink -f "$(which sphinx)")")/../share/sphinx/public/
+CTRLR_IP_ADDR=""
+GDBPORT=2345
+NETWORK_INTERFACE=lo  # use loopback interface by default
+GAZEBO_DEFAULT_MASTER_PORT=11345  # use gazebo default master port
+SPHINX_DEFAULT_WEB_SERVER_PORT=9002
+SPHINX_DEFAULT_WEB_SOCKET_PORT=9300
+SPHINX_TIME=0  # seconds since the Unix epoch
+name=$(basename "$0")
+worldfile=""
+
+######################################
+function get_server_ip
+{
+    local INTERFACE=$1
+
+    server_ip=$(ip -oneline -family inet address show "${INTERFACE}" | \
+      head -n 1 | tr -s ' ' | cut -d' ' -f4 | cut -d/ -f1)
+    if [ -z "${server_ip}" ]; then
+        exit 1
+    fi
+    echo "${server_ip}"
+}
+
+######################################
+function ping_firmwared
+{
+    ret=$(fdc ping)
+    if [[ ${ret} != "PONG" ]]; then
+        echo "${ret}" > /dev/stderr
+        return 1
+    fi
+    return 0
+}
+
+######################################
+function set_port
+{
+    local default_port=$1
+    local port=
+    local exact=
+    local ret=
+
+    if [ -z "${2:-}" ]; then
+        port=${default_port}
+        exact=0
+    else
+        port=${2}
+        exact=1
+    fi
+
+    ret=$(fdc register_port "${port}" "${SPHINX_PID}" ${exact}| sed 's/ registered//g')
+    if [[ ${ret} =~ firmwared.* ]]; then
+        echo "Fatal: unable to register port '${port}'" > /dev/stderr
+        echo "Returned error: '${ret}'" > /dev/stderr
+        exit 1
+    fi
+    echo "${ret}"
+}
+
+######################################
+function start_port_forwarding
+{
+    IPCTRL=$1
+    IPDRONE="10.202.0.1"
+
+    if [ -z "${IPCTRL}" ]; then
+        echo "missing controller IP address! Cannot activate port forwarding."
+        return
+    fi
+
+    ALLPORTS=""
+    ALLPORTS+="44444 TCP ${IPDRONE}\\n" # connection
+    ALLPORTS+="54321 UDP ${IPDRONE}\\n" # dragon v1 (arsdk)
+    ALLPORTS+="43210 UDP ${IPCTRL}\\n"  # dragon v1 (arsdk)
+    ALLPORTS+="2233 UDP ${IPDRONE}\\n"  # dragonfly (arsdk-ng)
+    ALLPORTS+="9988 UDP ${IPCTRL}\\n"   # dragonfly (arsdk-ng)
+    ALLPORTS+="55004 UDP ${IPCTRL}\\n"  # video stream
+    ALLPORTS+="55005 UDP ${IPCTRL}\\n"  # video stream
+    ALLPORTS+="5004 UDP ${IPCTRL}\\n"   # video stream
+    ALLPORTS+="5005 UDP ${IPCTRL}\\n"   # video stream
+
+    while IFS=' ' read -r port protocol ip ; do
+        if [ -z "${port}" ] || [ -z "${protocol}" ] || [ -z "${ip}" ]; then
+            break
+        fi
+        socat "${protocol}4-LISTEN:${port},fork" "${protocol}4:${ip}:${port}" &
+    done < <(echo -e "${ALLPORTS}")
+}
+
+
+#########################################
+function display_help_drone_params {
+    echo "Available drone parameters:"
+    echo "---------------------------"
+    echo "  name"
+    echo "      unique name of the drone"
+    echo "  firmware"
+    echo "      path to the drone firmware (cannot work with 'model' param)"
+    echo "  model"
+    echo "      path to the drone model folder (cannot work with 'firmware' param)"
+    echo "  pose"
+    echo "      initial position and orientation of the drone in the world. It"
+    echo "      can either be the name of a spawn point or a position(x, y, z)"
+    echo "      and rotation (roll, pitch, yaw) in the global coordinate frame"
+    echo "      syntax: X Y Z ROLL PITCH YAW"
+    echo "  [MACHINE_PARAM]"
+    echo "      customizes a drone machine parameter. The available machine"
+    echo "      parameters depend on the type of drone. For more details, see"
+    echo "      HTML sphinx guide."
+    echo ""
+    echo "Parameters used only for firmwares:"
+    echo ""
+    echo "  hardware"
+    echo "      string identifying the board on which the firmware has to run"
+    echo "  interface"
+    echo "      sets the name of the virtual ethernet interface's end, living"
+    echo "      in the drone's firmware instance"
+    echo "  stolen_interface"
+    echo "      sets the wifi interface of the simulated drone"
+    echo "      syntax: NAME:NAME_ONCE_ASSIGNED:IP_ADDRESS"
+    echo "          NAME"
+    echo "              name of the host wifi interface"
+    echo "          NAME_ONCE_ASSIGNED"
+    echo "              must be 'eth0'"
+    echo "          IP_ADDRESS"
+    echo "              must be '192.168.42.1/24'"
+    
+    echo "  stolen_bdaddr"
+    echo "      sets the MAC address of the Bluetooth interface of the"
+    echo "      simulated drone"
+    echo "  wifi_channel"
+    echo "      forces the use of a specific wifi channel"
+    echo "  fs_size"
+    echo "      sets the drone root filesystem size. The specified size must be"
+    echo "      within 0 (0 Bytes) and 2G (2 GBytes). Valid metric prefix are:"
+    echo "          k, K, m, M, g and G"
+    echo ""
+}
+
+#########################################
+function display_help_actor_params {
+     echo "Available actor parameters:"
+    echo "---------------------------"
+    echo "  name"
+    echo "      unique name of the actor"
+    echo "  pose"
+    echo "      initial position and orientation of the actor in world"
+    echo "      coordinates"
+    echo "      syntax: X Y Z ROLL PITCH YAW"
+    echo "  path"
+    echo "      file containing the description of a path as a list of"
+    echo "      waypoints in XML format. Can be repeated."
+    echo "  selected_path"
+    echo "      name of the path that the actor will follow at startup"
+    echo "  machine"
+    echo "      name of the machine the actor's sensors (GPS, barometer) will"
+    echo "      send their data to. Can be repeated."
+}
+
+#########################################
+function display_help_server {
+    echo "Parrot-Sphinx simulator"
+    echo "-----------------------"
+    echo ""
+    echo "Usage: ${name} [WORLDFILE] [DRONEFILE::[OPTION=VALUE]...]..."\
+             " [ACTORFILE::[OPTION=VALUE]...]... [OPTION]..."
+    echo ""
+    echo "Available options:"
+    
+    echo "  --nodatalog"
+    echo "      deactivates telemetry"
+    echo "  --datalog-outdir=<dir>"
+    echo "      changes the default host's telemetryd output directory"
+    echo "      Telemetry file is located by default in ${TELEMETRY_OUTPUTDIR}"
+    echo "  --datalog-rate=<rate>"
+    echo "      sets the data rate (ms) related to host's telemetryd"
+    echo "  --pause-firmware|-U"
+    echo "      if specified, all drone plugins are loaded"
+    echo "      but the firmware is not started"
+    echo "  --interface=<network_interface>"
+    echo "      if specified, sets the network interface to listen to,"
+    echo "      defaults to loopback interface."
+    echo "  --hmi-port=<number>"
+    echo "      if specified, sets the port to listen to, defaults to"
+    echo "      ${GAZEBO_DEFAULT_MASTER_PORT}."
+    echo "  --http-port=<number>"
+    echo "      if specified, sets the HTTP port used by the dashboard,"
+    echo "      defaults to ${SPHINX_DEFAULT_WEB_SERVER_PORT}."
+    echo "  --port-forwarding=<controller_ip>"
+    echo "      if specified, forwards all required ports to the"
+    echo "      controller or the simulated drone so that an ARSDK controller"
+    echo "      running on another machine can connect remotely to"
+    echo "      the simulated firmware."
+    
+    echo "  --disable-physics"
+    echo "      if specified, gazebo will start with physic engined disabled"
+    echo "  --rt-percent=<number>"
+    echo "      if specified, sets the real-time factor expressed in percent,"
+    echo "      defaults to 100."
+    echo "  --enable-fpe"
+    echo "      enables floating point exception"
+    echo "  --world-plugin=<file>"
+    echo "      attachs a world plugin to the world."
+    echo "  --time=<number>"
+    echo "      if specified, sets the simulation start to an arbitrary value"
+    echo "      in seconds, defaults to 0."
+    display_help_common
+}
+
+function display_help_client {
+    echo "Parrot-Sphinx simulator"
+    echo "-----------------------"
+    echo ""
+    echo "Usage: ${name} [OPTION]..."
+    echo ""
+    echo "  --server-uri=<ip_addr>:<port>"
+    echo "      indicates how to reach the server. Defaults to"
+    echo "      127.0.0.1:${GAZEBO_DEFAULT_MASTER_PORT}."
+    display_help_common
+}
+
+function display_help_common {
+    echo "  --version"
+    echo "      prints the current version of Parrot-Sphinx and Gazebo"
+    echo "  --doc"
+    echo "      displays HTML Parrot-Sphinx guide in the default web browser"
+    echo "  --help|-h"
+    echo "      prints this page"
+    echo "  --help-drone"
+    echo "      prints drone's available parameters"
+    echo "  --help-actor"
+    echo "      prints actor's available parameters"
+    echo "  --help-gazebo"
+    echo "      prints Gazebo's help"
+    
+    echo "  --legal-mentions"
+    echo "      displays legal mentions in the default web browser"
+    echo "  --license"
+    echo "      prints license agreement"
+    
+    echo ""
+    echo "All other options are passed to Gazebo with no parsing."
+}
+
+function display_version {
+    root=$1
+    
+    packagename="parrot-sphinx"
+    
+    
+
+    # is it a version built locally?
+    if [[ ${root} == *"out/sphinx-"*"/final"* ]]; then
+        # retrieve a "nice" version number when using local workspace
+        cd "${root}/../../../.repo/manifests" || exit
+        start=$(git describe --abbrev=0 --tags)
+        middle=$(date "+~dev~git%Y%m%d.%H%M%S")
+        end=$(git log --pretty=format:"%h" -1)
+        cd - > /dev/null
+        version="${start}${middle}-g${end}"
+        version=${version#sphinx-}
+    else
+        # it is a version installed from deb package
+        version=$(dpkg -s ${packagename} 2> /dev/null | grep "^Version:" | sed 's/.* //g')
+    fi
+
+    # pass generated version to runtime software
+    export SPHINX_INTERNAL_VERSION="${version}"
+
+    # display it
+    if [ -n "${version}" ]; then
+        
+        echo -e "Parrot-Sphinx simulator version ${version}\\n"
+    fi
+}
+
+
+for var in "$@"
+do
+case $var in
+    --version)
+        DISPLAY_VERSION=true
+        GAZEBO_ARGS+=("$var")
+        ;;
+
+    -h|--help)
+        if [ "$name" == "sphinx-client" ]; then
+            display_help_client
+        else
+            display_help_server
+        fi
+        exit 0
+        ;;
+
+    --help-drone)
+        display_help_drone_params
+        exit 0
+        ;;
+
+    --help-actor)
+        display_help_actor_params
+        exit 0
+        ;;
+
+    --help-gazebo)
+        GAZEBO_ARGS+=("-h")
+        ;;
+
+    
+    --license)
+        less "${root}usr/share/sphinx/license/content"
+        exit 0
+        ;;
+
+    --legal-mentions)
+        xdg-open "${root}usr/share/police/police-notice.html"
+        exit 0
+        ;;
+    
+
+    --doc)
+        xdg-open "${root}usr/share/sphinx/doc/index.html"
+        exit 0
+        ;;
+
+    -V|--enable-video)
+        echo "warning: option -V,--enable-video is deprecated. Camera sensors"\
+             "are always activated"
+        ;;
+
+    --enable-fpe)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        ENABLE_FPE=true
+        ;;
+
+    
+
+    --disable-physics)
+        export GAZEBO_DISABLE_PHYSICS=1
+        ;;
+
+    --nodatalog)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        DATALOG=false
+        ;;
+
+    --datalog)
+        echo "WARNING: Option '--datalog' is deprecated."\
+            " Telemetry is now activated by default."
+        ;;
+
+    --datalog-outdir=*)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        TELEMETRY_OUTPUTDIR="${var#*=}"
+        ;;
+
+    --datalog-rate=*)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        TELEMETRY_RATE="${var#*=}"
+        ;;
+
+    -U|--pause-firmware)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        STARTUP_PAUSE=true
+        ;;
+
+    --port-forwarding=*)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        CTRLR_IP_ADDR="${var#*=}"
+        ;;
+
+    --interface=*)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        NETWORK_INTERFACE=${var#*=}
+        ;;
+
+    --hmi-port=*)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        MASTER_PORT=${var#*=}
+        ;;
+
+    --http-port=*)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        HTTP_PORT=${var#*=}
+        ;;
+
+    --server-uri=*)
+        if [ "$name" != "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        export GAZEBO_MASTER_URI=${var#*=}
+        ;;
+
+    --time=*)
+        if [ "$name" == "sphinx-client" ]; then
+            echo "option $var is not supported by $name"
+            exit 1
+        fi
+        SPHINX_TIME=${var#*=}
+        ;;
+
+    #default case
+    *)
+        GAZEBO_ARGS+=("$var")
+        ;;
+esac
+done
+
+# set the simulation time
+export SPHINX_TIME
+
+# set the GAZEBO_MODEL_PATH, but preserve its original value
+if [ -n "${GAZEBO_MODEL_PATH+x}" ]; then
+    GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:${root}usr/share/sphinx/models/
+else
+    GAZEBO_MODEL_PATH=${root}usr/share/sphinx/models/
+fi
+export GAZEBO_MODEL_PATH
+
+# set the GAZEBO_RESOURCE_PATH, but preserve its original value
+if [ -n "${GAZEBO_RESOURCE_PATH+x}" ]; then
+    GAZEBO_RESOURCE_PATH=${GAZEBO_RESOURCE_PATH}:${root}usr/share/gazebo-${SPHINX_GAZEBO_VERSION}/:${root}usr/share/sphinx/
+else
+    GAZEBO_RESOURCE_PATH=${root}usr/share/gazebo-${SPHINX_GAZEBO_VERSION}/:${root}usr/share/sphinx/
+fi
+export GAZEBO_RESOURCE_PATH
+
+# set the OGRE_RESOURCE_PATH, but preserve its original value
+if [ -n "${OGRE_RESOURCE_PATH+x}" ]; then
+    OGRE_RESOURCE_PATH=${OGRE_RESOURCE_PATH}:${root}usr/lib/OGRE/
+else
+    OGRE_RESOURCE_PATH=${root}usr/lib/OGRE/
+fi
+export OGRE_RESOURCE_PATH
+
+# set the GAZEBO_MODEL_DATABASE_URI if not already set
+if [ -z "${GAZEBO_MODEL_DATABASE_URI+x}" ]; then
+    GAZEBO_MODEL_DATABASE_URI=${SPHINX_MODEL_DATABASE_URI}
+    export GAZEBO_MODEL_DATABASE_URI
+fi
+
+# set the directory where the Web client is located
+export SPHINX_WEB_CLIENT_DIR
+
+if [ "${STARTUP_PAUSE}" == true ]; then
+    # pause firmware instances on startup
+    export SPHINX_STARTUP_PAUSE=1
+fi
+
+if [ "${ENABLE_FPE}" == true ]; then
+    # enable floating point exception
+    export SPHINX_ENABLE_FPE=1
+fi
+
+# Generate a cookie for the current X11 display if it doesn't exist already.
+SPHINX_XAUTHORITY=$(mktemp --tmpdir sphinx-Xauthority-XXXXXXXX)
+
+# Generate a non-expiring cookie. (TODO: Revoke it on exit.)
+xauth -f "${SPHINX_XAUTHORITY}" generate "${DISPLAY}" . trusted timeout 0
+
+# Remove hostname restriction from the cookie. Normally, the
+# client's hostname must be the same when creating and when
+# using the cookie. This removes this restriction by setting the
+# connection family to "FamilyWild" (0xffff).
+xcookie=$(xauth -f "${SPHINX_XAUTHORITY}" nlist | sed 's/^..../ffff/')
+echo -n > "${SPHINX_XAUTHORITY}"
+xauth -f "${SPHINX_XAUTHORITY}" nmerge - <<< "$xcookie"
+
+# show sphinx version
+display_version "${root}"
+
+# export process ID to register ports with it in fwman
+export SPHINX_PID="${HOSTNAME}-$$"
+
+if [ "${name}" = "sphinx-client" ]; then
+    # set the IP address used by gzclient to reach gzserver
+    if [ -n "${GAZEBO_MASTER_URI+x}" ]; then
+        server_ip=$(echo "${GAZEBO_MASTER_URI}" | cut -d ":" -f1)
+    else
+        server_ip=$(get_server_ip "lo")
+    fi
+    GAZEBO_IP=$(ip route get "${server_ip}" | awk '{for(i=1; i<NF; i+=2) {if($i=="src") {printf $(i+1);exit}}}')
+else
+    # set the publicized IP address for gzserver
+    GAZEBO_IP=$(get_server_ip "${NETWORK_INTERFACE}")
+fi
+export GAZEBO_IP
+
+if [ ! "${name}" = "sphinx-client" ] && [ "${DISPLAY_VERSION}" == false ]; then
+    # test connection with firmwared
+    ret=$(ping_firmwared)
+    if [ "${ret}" = 1 ]; then
+        exit 1
+    fi
+
+    # check firmwared version
+    sphinx_version=$(echo "${SPHINX_INTERNAL_VERSION}" | cut -d'~' -f 1)
+    firmwared_version=$(fdc version | grep Version | sed 's/Version: //g')
+    echo -e "connecting to firmwared version: ${firmwared_version}"
+    if [ ! "${sphinx_version}" = "${firmwared_version}" ]; then
+        echo -e "error: sphinx and firmwared versions do not match"
+        exit 1
+    fi
+
+    # set the gzserver URI
+    MASTER_PORT=$(set_port ${GAZEBO_DEFAULT_MASTER_PORT} "${MASTER_PORT:-}")
+    GAZEBO_MASTER_URI="${GAZEBO_IP}:${MASTER_PORT}"
+    export GAZEBO_MASTER_URI
+
+    # set the http/websocket port numbers
+    SPHINX_WEB_SERVER_PORT=$(set_port ${SPHINX_DEFAULT_WEB_SERVER_PORT} "${HTTP_PORT:-}")
+    export SPHINX_WEB_SERVER_PORT
+    GNDCTRL_WEBSOCKET_PORT=$(set_port ${SPHINX_DEFAULT_WEB_SOCKET_PORT})
+    export GNDCTRL_WEBSOCKET_PORT
+
+    # start telemetryd
+    if [ "${DATALOG}" == true ]; then
+        echo "starting Telemetryd to capture true data..."
+        SPHINX_SHM_DIR=/dev/shm/sphinx-${MASTER_PORT}
+        export SPHINX_SHM_DIR
+        mkdir -p "${SPHINX_SHM_DIR}"
+        rm -f "${SPHINX_SHM_DIR}"/*
+        mkdir -p "${TELEMETRY_OUTPUTDIR}"
+        TELEMETRY_OPT=(--output-dir ${TELEMETRY_OUTPUTDIR})
+        if [ ! -z "${TELEMETRY_RATE}" ]; then
+            TELEMETRY_OPT+=(--rate ${TELEMETRY_RATE})
+        fi
+        exec -a "telemetryd_host" telemetryd "${TELEMETRY_OPT[@]}" \
+                 -p "$(dirname "$(which telemetryd)")/../lib/tlm-plugins/" \
+                 "sphinx-${MASTER_PORT}:${SPHINX_SHM_DIR}" &
+    fi
+fi
+
+# start port forwarding if requested
+if [ -n "${CTRLR_IP_ADDR}" ]; then
+    start_port_forwarding "${CTRLR_IP_ADDR}" "${GDBPORT}"
+fi
+
+on_exit() {
+    # go throughout the whole exit routine
+    set +eu
+
+    # clean up the generated world file
+    if [ -e "${worldfile}" ]; then
+        rm "${worldfile}"
+    fi
+
+    # clean up the X cookie (still needs to be revoked from the server!)
+    rm "${SPHINX_XAUTHORITY}"
+
+    # kills processes created by this script
+    pkill --parent $$
+
+    # unregister ports owned by current process
+    if [ "${DISPLAY_VERSION}" == false ]; then
+        fdc unregister_all_ports "${SPHINX_PID}" > /dev/null
+    fi
+
+    # kill gazebo and all its subprocesses
+    if [ ! -n "${GZSID}" ]; then return; fi
+    GZPIDS=($(pgrep -s "${GZSID}"))
+    if [ ${#GZPIDS[@]} -eq 0 ]; then return; fi
+    kill "${GZPIDS[@]}"
+
+    # wait until all gz processes are removed
+    timeout 10 bash -c --\
+        "while kill -0 -- ${GZPIDS[*]} 2> /dev/null; do sleep 0.2; done;"
+
+    # escalate to SIGKILL if needed
+    if [ $? = 124 ]; then
+        kill -SIGKILL "${GZPIDS[@]}"
+    fi
+}
+
+trap on_exit EXIT
+
+# activate backtrace display on ABORT and SEGFAULT
+export LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
+export SEGFAULT_SIGNALS="abrt segv fpe"
+export SPHINX_XAUTHORITY
+
+# preprocess gazebo options
+if [ ${#GAZEBO_ARGS[@]} -gt 0 ]; then
+    GAZEBO_ARGS=($(gz_args_preprocess "${root}usr/share/sphinx/worlds/" "${GAZEBO_ARGS[@]}"))
+
+    # last option is the generated world file
+    if [[ ${GAZEBO_ARGS[-1]} =~ .*sphinx-.........world ]]; then
+        worldfile=${GAZEBO_ARGS[-1]}
+    fi
+fi
+
+# make gazebo in verbose mode to display log on standard output
+GAZEBO_ARGS+=("--verbose")
+
+#start one of the gazebo running modes
+if [ "${name}" = "sphinx-client" ]; then
+    cmd="gzclient"
+elif [ "${name}" = "sphinx-server" ]; then
+    cmd="gzserver"
+else
+    cmd="gazebo"
+fi
+
+
+    # Create a session ID dedicated to gazebo processes.
+    # This facilitates the process cleanup in exit routine.
+    cmd="setsid ${cmd}"
+    ${cmd} "${GAZEBO_ARGS[@]}" &
+
+    # As setsid is executed asynchronously,
+    # we need to wait until a new SID gets created
+    MAINSID=$(ps -o sid $$)
+    while [ "$(ps -o sid $!)" == "${MAINSID}" ]; do sleep 0.1; done
+
+    # Store gazebo's session ID and wait until gazebo terminates
+    GZPID=$!
+    GZSID=$(ps -o sid "${GZPID}" |grep -o '[0-9]*')
+    wait ${GZPID}
+
+

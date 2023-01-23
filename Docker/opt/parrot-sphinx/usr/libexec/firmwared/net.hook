@@ -1,0 +1,213 @@
+#!/bin/bash
+
+NB_ARGS=9
+if [ "$#" -ne ${NB_ARGS} ]; then
+    echo "Missing arguments to ${0}: $# < ${NB_ARGS}"
+    exit -1
+fi
+
+set -e
+
+action=${1}		# one of create, assign or config
+instance_interface=${2}	# e.g. eth0, interface seen in the container
+# another optional interface to assign to the container's netns. It can contain
+# up to 3 values, the first one is the name of the interface to steal, the
+# second is the name it must after being assigned to the instance's netns and
+# the last one is the IP address it must have before the instance is started
+OLDIFS=${IFS}
+IFS=:
+stolen_interface_configuration=(${3})
+IFS=$OLDIFS
+stolen_btusb_syspath=${4}
+
+host_interface_base=${5}	# e.g. fd_veth_peer, base for building host's end name
+instance_id=${6}		# e.g. 0, 1, ...
+ip_base=${7}		# e.g. 10.202., ~ first two bytes of IP
+netns=${8}		# normally, pid (in host ns) of the pid 1 (in container)
+verbose=${9}
+
+if [ "${verbose}" = "y" ]; then
+	set -x
+fi
+
+set -u
+
+host_iface=${host_interface_base}${instance_id}
+host_addr=${ip_base}${instance_id}.254/24
+cont_temp_iface=fd_veth_peer${instance_id}
+cont_addr=${ip_base}${instance_id}.1/24
+
+stolen_interface=${stolen_interface_configuration[0]:-}
+target_name=${stolen_interface_configuration[1]:-}
+stolen_interface_ip=${stolen_interface_configuration[2]:-}
+
+FIRMWARED_TAG="ADDED BY FIRMWARED"
+function get_net_rules() {
+	# get net rules associated to firmwared
+    echo "$(iptables -S | grep "${FIRMWARED_TAG}" | sed -e "s/-A//g")"
+}
+
+
+if [ -n "${stolen_interface}" ] && \
+	( [ -z "${target_name}" ] || [ -z "${stolen_interface_ip}" ] ) ; then
+	echo "stolen interface does not contain all required fields";
+	exit 1
+fi
+
+function wait_for_iface() {
+	if_name=$1
+	timeout=$2
+	retry=0
+	if [ ! -z "$(ip link list | grep $if_name)" ]; then
+		echo "$if_name exists"
+	else
+		echo "$if_name is absent"
+		until test ! -z "$(ip link list | grep $if_name)"
+		do
+			if [ $retry -eq $timeout ]; then
+				echo "Waiting for $if_name timeout. "
+				exit 1
+			fi
+			retry=$((retry+1))
+			echo "Waiting for $if_name $(($retry))/$timeout ... "
+			sleep 1
+		done
+		echo "$if_name exists"
+	fi
+}
+
+if [ "${action}" = "create" ];
+then
+	# create host/instance virtual interfaces
+	ip link add ${host_iface} type veth peer name ${cont_temp_iface}
+
+	# [hack] On debian8, link creation seems somehow asynchronous,
+	# especially when NetworkManager is started.
+	# Let's check that either iface is created.
+	wait_for_iface ${host_iface} 3
+	wait_for_iface ${cont_temp_iface} 3
+
+	ip address add ${host_addr} dev ${host_iface}
+	ip link set ${host_iface} up
+
+	#Allow forwarding of packages between fd_veth interfaces
+	#Forbid forwarding of packages from/to fd_veth interface
+	#from/to non fd_veth interfaces
+	net_rules=$(get_net_rules)
+	if [[ ! ${net_rules} == *"ACCEPT"* ]]; then
+		iptables -I FORWARD 1 -i fd_veth+ -o fd_veth+ -j ACCEPT \
+		-m comment --comment "${FIRMWARED_TAG}"
+		iptables -I FORWARD 2 -o fd_veth+ -j DROP \
+		-m comment --comment "${FIRMWARED_TAG}"
+		iptables -I FORWARD 3 -i fd_veth+ -j DROP \
+		-m comment --comment "${FIRMWARED_TAG}"
+	fi
+	sysctl -w net.ipv4.conf.${host_iface}.forwarding=1
+
+elif [ "${action}" = "assign" ];
+then
+	ip link set ${cont_temp_iface} netns ${netns}
+	if [ -n "${stolen_interface}" ]; then
+		if [ ! -e /sys/class/net/${stolen_interface} ]; then
+			echo "Interface ${stolen_interface} does not exist, quitting..."
+			exit 1
+		fi
+		phy80211_dir=/sys/class/net/${stolen_interface}/phy80211
+		phy_file=${phy80211_dir}/index
+		if [ -e "${phy_file}" ]; then
+			# wifi interface
+			mapfile < ${phy_file} phy
+			# attempt to enable if rfkilled
+			echo 0 > ${phy80211_dir}/rfkill*/soft || true
+			iw --debug phy#${phy} set netns ${netns}
+		else
+			# non wifi interface
+			ip link set ${stolen_interface} netns ${netns}
+		fi
+	fi
+	if [ -n "${stolen_btusb_syspath}" ]; then
+		# unbind the bluetooth usb device from the btusb driver so that the
+		# instance can manage it
+		echo ${stolen_btusb_syspath} > "/sys/bus/usb/drivers/btusb/unbind"
+	fi
+elif [ "${action}" = "config" ];
+then
+	# setup instance veth and stolen interfaces
+	ip link set ${cont_temp_iface} name ${instance_interface}
+	ip address add ${cont_addr} dev ${instance_interface}
+	ip link set ${instance_interface} up
+	if [ -n "${stolen_interface}" ]; then
+		# stolen interface setup
+		wait_for_iface ${stolen_interface} 3
+		if [ "${target_name}" != "${stolen_interface}" ]; then
+			ip link set ${stolen_interface} name ${target_name}
+		fi
+		if [ -n "${stolen_interface_ip}" ]; then
+			ip address add ${stolen_interface_ip} brd + dev \
+					${target_name}
+		fi
+
+		# setup instance hardware bridge
+		if [[ "$stolen_interface}" == sphx* ]]; then
+			# setup bridge ip address
+			bridge_interface_ip=192.168.43.254
+			ip address add ${bridge_interface_ip} brd + dev \
+					${target_name}
+
+			# ensure that the bridge interface is up
+			ip link set ${target_name} up
+
+			# setup instance bridge subnet
+			bridge_interface_subnet=192.168.43.0/24
+			ip route add ${bridge_interface_subnet} dev eth0
+		fi
+
+	fi
+
+	# Prevent the ifb module from creating default ifb interfaces
+	modprobe ifb numifbs=0
+
+	# create instance ifb interfaces directly in the right namespace
+	# ifb interfaces setup :
+	# - instance_interface_ifb egress <-> instance_interface (veth) ingress
+	# - target_interface_ifb egress <-> target_interface (stolen) ingress
+	ip link add ${instance_interface}_ifb type ifb
+	ip link set dev ${instance_interface}_ifb up
+	tc qdisc add dev ${instance_interface} handle ffff: ingress
+	tc filter add dev ${instance_interface} parent ffff: protocol ip \
+		u32 match u32 0 0 action mirred egress redirect dev \
+		${instance_interface}_ifb
+
+	# Route IP packets addressed to subnet ${ip_base}.x.x towards host
+	ip route add ${ip_base}0.0/16 via ${ip_base}${instance_id}.254
+	if [ -n "${stolen_interface}" ]; then
+		ip link add ${target_name}_ifb type ifb
+		ip link set dev ${target_name}_ifb up
+		tc qdisc add dev ${target_name} handle ffff: ingress
+		tc filter add dev ${target_name} parent ffff: protocol ip \
+			u32 match u32 0 0 action mirred egress redirect dev \
+			${target_name}_ifb
+	fi
+elif [ "${action}" = "clean" ];
+then
+	# Cleaning up the host virtual peer interface might fail if the
+	# instance has exited. The net namespace of the instance might no longer
+	# exist and in fact the kernel might have already deleted the host
+	# virtual peer interface. Ignore any error and continue the cleaning
+	# process (restore the bluetooth driver, ...)
+	ip link delete ${host_iface} || true
+	if [ -n "${stolen_btusb_syspath}" ]; then
+		# bind the bluetooth usb device to the btusb driver, only if we know
+		# its id, if not, then it must not be bound
+		echo ${stolen_btusb_syspath} > "/sys/bus/usb/drivers/btusb/bind"
+	fi
+	net_rules=$(get_net_rules)
+	if [ -n  "${net_rules}" ]; then
+		while read -r net_rule; do
+			bash -c "iptables -D ${net_rule}"
+		done <<< "${net_rules}"
+	fi
+else
+	echo "wrong action string \"$action\""
+	exit 1
+fi

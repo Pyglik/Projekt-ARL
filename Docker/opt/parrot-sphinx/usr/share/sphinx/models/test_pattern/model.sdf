@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="test_pattern">
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+      <visual name="visual">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <plane>
+            <normal>0 0 1</normal>
+            <size>1 1</size>
+          </plane>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://test_pattern/materials/scripts</uri>
+            <uri>model://test_pattern/materials/textures</uri>
+            <name>test_pattern</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

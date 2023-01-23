@@ -1,0 +1,446 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>How to use Follow Me with Parrot-Sphinx &mdash; Sphinx-Guide 1.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Running sphinx in VirtualBox" href="virtualbox.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Sphinx-Guide
+          
+
+          
+            
+            <img src="_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Change logs</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="whatissphinx.html">What is Parrot-Sphinx</a></li>
+<li class="toctree-l1"><a class="reference internal" href="system-requirements.html">System requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation procedure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firststep.html">First step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="connectdrone.html">How to connect to the simulated drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drone-requirements.html">Take off and hints, drone by drone</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dronefile.html">Anatomy of a ‘.drone’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worldfile.html">Anatomy of a ‘.world’ file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">How to watch flight information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_ifaces.html">Tuning of drone internals at runtime - interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginctrl_howtos.html">Tuning of drone internals at runtime - Howtos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Parrot-Sphinx license agreement</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="advanced_topics.html">Advanced topics</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="firmwared.html">About Firmwared</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html">Running Parrot-Sphinx remotely</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shadows.html">How to add shadows in your scene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gazebo_topics.html">How to visualize and control Parrot-Sphinx via Gazebo’s topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openstreetmap.html">Create a world with OpenStreetMap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handling.html">How to make a drone follow scripted trajectories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="virtualbox.html">Running sphinx in VirtualBox</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How to use Follow Me with Parrot-Sphinx</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-your-world">Set up your world</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameters">Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#path-files">Path files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user-interface">User interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#actor-files">Actor files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pedestrian-actors">Pedestrian actors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vehicle-actors">Vehicle actors</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Sphinx-Guide</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="advanced_topics.html">Advanced topics</a> &raquo;</li>
+        
+      <li>How to use Follow Me with Parrot-Sphinx</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="how-to-use-follow-me-with-parrot-sphinx">
+<h1>How to use Follow Me with Parrot-Sphinx<a class="headerlink" href="#how-to-use-follow-me-with-parrot-sphinx" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial shows how to set up your world to use the
+<a class="reference external" href="https://www.parrot.com/follow-me">Follow Me</a> mode with Parrot-Sphinx.</p>
+<div class="section" id="set-up-your-world">
+<h2>Set up your world<a class="headerlink" href="#set-up-your-world" title="Permalink to this headline">¶</a></h2>
+<p>Below is a command line example that shows how to insert a drone and a
+pedestrian actor with a prefined path into the scene:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::name=follower \</span>
+<span class="go">/opt/parrot-sphinx/usr/share/sphinx/actors/pedestrian.actor::machine=follower::path=/opt/parrot-sphinx/usr/share/sphinx/paths/square_walk.path</span>
+</pre></div>
+</div>
+<p>Actors come with GPS and barometer plugins. When properly configured, the drone
+can receive the actor barometer and GPS data from Parrot-Sphinx instead of FreeFlight.
+To do that, you must set the actor <code class="docutils literal notranslate"><span class="pre">machine</span></code> parameter to the name of the
+drone.</p>
+<p>Note: It is possible to send barometer and GPS data to multiple drones:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::name=follower1 \</span>
+<span class="go">/opt/parrot-sphinx/usr/share/sphinx/actors/pedestrian.actor::machine=follower1::machine=follower2::path=/opt/parrot-sphinx/usr/share/sphinx/paths/square_walk.path</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<p>Actor parameters can be modified by command line while launching Parrot-Sphinx. Let’s
+go through each item:</p>
+<ul class="simple">
+<li><p><strong>name</strong> holds the name of the actor. It must be unique, so if you insert two
+actors of the same type into the scene, you must at least change the name of
+one of them. The default value is <code class="docutils literal notranslate"><span class="pre">pedestrian</span></code> for pedestrian actors and
+<code class="docutils literal notranslate"><span class="pre">vehicle</span></code> for vehicle actors.</p></li>
+<li><p><strong>pose</strong> holds the initial position and orientation of the actor in world
+coordinates. By default, the actor appears at the origin.</p></li>
+<li><p><strong>path</strong> file containing the description of a path as a list of waypoints in
+XML format. This parameter can be repeated to create multiple paths.</p></li>
+<li><p><strong>selected_path</strong> holds the name of the path that the actor will follow at
+startup. By default, this parameter is set to the first defined path.</p></li>
+<li><p><strong>machine</strong> holds the name of the machine the actor’s sensors (GPS,
+barometer) will send their data to. This parameter can be repeated to send the
+data to multiple drones.</p></li>
+</ul>
+</div>
+<div class="section" id="path-files">
+<h2>Path files<a class="headerlink" href="#path-files" title="Permalink to this headline">¶</a></h2>
+<p>Path files contain the description of a path in XML format. As an example, this
+is the content of the <code class="docutils literal notranslate"><span class="pre">/opt/parrot-sphinx/usr/share/sphinx/paths/square_walk.path</span></code> file:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;path</span> <span class="na">name=</span><span class="s">&quot;square_walk&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;loop&gt;</span>true<span class="nt">&lt;/loop&gt;</span>
+  <span class="nt">&lt;auto_start&gt;</span>true<span class="nt">&lt;/auto_start&gt;</span>
+  <span class="nt">&lt;delay_start&gt;</span>1<span class="nt">&lt;/delay_start&gt;</span>
+  <span class="nt">&lt;waypoint&gt;</span>
+    <span class="nt">&lt;animation&gt;</span>walk<span class="nt">&lt;/animation&gt;</span>
+    <span class="nt">&lt;velocity&gt;</span>1<span class="nt">&lt;/velocity&gt;</span>
+    <span class="nt">&lt;xy&gt;</span>0 0<span class="nt">&lt;/xy&gt;</span>
+  <span class="nt">&lt;/waypoint&gt;</span>
+  <span class="nt">&lt;waypoint&gt;</span>
+    <span class="nt">&lt;animation&gt;</span>run<span class="nt">&lt;/animation&gt;</span>
+    <span class="nt">&lt;velocity&gt;</span>2<span class="nt">&lt;/velocity&gt;</span>
+    <span class="nt">&lt;xy&gt;</span>0 10<span class="nt">&lt;/xy&gt;</span>
+  <span class="nt">&lt;/waypoint&gt;</span>
+  <span class="nt">&lt;waypoint&gt;</span>
+    <span class="nt">&lt;animation&gt;</span>run<span class="nt">&lt;/animation&gt;</span>
+    <span class="nt">&lt;velocity&gt;</span>2<span class="nt">&lt;/velocity&gt;</span>
+    <span class="nt">&lt;xy&gt;</span>10 10<span class="nt">&lt;/xy&gt;</span>
+  <span class="nt">&lt;/waypoint&gt;</span>
+  <span class="nt">&lt;waypoint&gt;</span>
+    <span class="nt">&lt;animation&gt;</span>walk<span class="nt">&lt;/animation&gt;</span>
+    <span class="nt">&lt;velocity&gt;</span>1<span class="nt">&lt;/velocity&gt;</span>
+    <span class="nt">&lt;xy&gt;</span>10 0<span class="nt">&lt;/xy&gt;</span>
+  <span class="nt">&lt;/waypoint&gt;</span>
+  <span class="nt">&lt;waypoint&gt;</span>
+    <span class="nt">&lt;animation&gt;</span>walk<span class="nt">&lt;/animation&gt;</span>
+    <span class="nt">&lt;velocity&gt;</span>1<span class="nt">&lt;/velocity&gt;</span>
+    <span class="nt">&lt;xy&gt;</span>0 0<span class="nt">&lt;/xy&gt;</span>
+  <span class="nt">&lt;/waypoint&gt;</span>
+<span class="nt">&lt;/path&gt;</span>
+</pre></div>
+</div>
+<p>In above example, the path name is <code class="docutils literal notranslate"><span class="pre">square_walk</span></code>. The &lt;path&gt; contains the list
+of waypoints that the actor will travel to in sequence.
+If the &lt;loop&gt; element is set to true, the animation will loop once the actor
+gets to the last waypoint. If the &lt;auto_start&gt; element is set to true, the
+animation starts immediately once selected. The &lt;delay_start&gt; element can be
+used to set the amount of time to delay start by.</p>
+<p>For pedestrian actors, each &lt;waypoint&gt; element may contain an &lt;animation&gt;
+element which identifies the animation to be played while moving the actor
+towards the waypoint. By default, the <code class="docutils literal notranslate"><span class="pre">walk</span></code> animation is used.</p>
+<p>The &lt;velocity&gt; element is used to set the velocity of the actor in m/s. The
+waypoint position can either be defined with a &lt;xy&gt; element or a &lt;model&gt;
+element. A &lt;xy&gt; element contains a position(x,y) with respect to the world
+frame. A &lt;model&gt; element contains the name of the model whose position will be
+used as the destination. The &lt;stop_duration&gt; element can be used to set the
+amount of time the actor will remain at this position before moving to the next
+waypoint.</p>
+<p>Another method for defining a path is to include it from another file:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;path</span> <span class="na">name=</span><span class="s">&quot;external_path&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;filename&gt;</span>/path/to/path.xml<span class="nt">&lt;/filename&gt;</span>
+<span class="nt">&lt;/path&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="user-interface">
+<h2>User interface<a class="headerlink" href="#user-interface" title="Permalink to this headline">¶</a></h2>
+<p>You can select a path either by command line or via the Web interface. See
+<a class="reference internal" href="pluginctrl_ifaces.html"><span class="doc">Tuning of drone internals at runtime - interfaces</span></a>.</p>
+<p>Once a path is selected, the actor can be started, stopped and paused, by
+sending the <code class="docutils literal notranslate"><span class="pre">start</span></code>, <code class="docutils literal notranslate"><span class="pre">stop</span></code>, and <code class="docutils literal notranslate"><span class="pre">pause</span></code> actions to the actor plugin. The
+<code class="docutils literal notranslate"><span class="pre">pause</span></code> action has no effect on vehicle actors.</p>
+<p>The visibility of the actor can be controlled with the <code class="docutils literal notranslate"><span class="pre">visible</span></code> parameter.</p>
+<p>Note that if you used &lt;model&gt; instead of &lt;xy&gt; elements to define the position
+of a waypoint, you can redefine your path while it is playing by sending a
+<code class="docutils literal notranslate"><span class="pre">pause</span></code> action and move the models associated with the waypoints. Once you are
+satisfied with your new path, simply send a <code class="docutils literal notranslate"><span class="pre">pause</span></code> action to resume the
+animation or send a <code class="docutils literal notranslate"><span class="pre">stop</span></code> action followed by a <code class="docutils literal notranslate"><span class="pre">play</span></code> action to restart it
+from the beginning.</p>
+</div>
+<div class="section" id="actor-files">
+<h2>Actor files<a class="headerlink" href="#actor-files" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pedestrian-actors">
+<h3>Pedestrian actors<a class="headerlink" href="#pedestrian-actors" title="Permalink to this headline">¶</a></h3>
+<p>Pedestrian actors are Gazebo animated characters based on captured pedestrian
+motion. They can be used to replay captured motion, or to use motion sequences
+for user-defined complex behaviours.</p>
+<p>The file <code class="docutils literal notranslate"><span class="pre">/opt/parrot-sphinx/usr/share/sphinx/actors/pedestrian.actor</span></code>
+contains the description of pedestrian actors. It can be modified to change the
+default actor’s behaviour.
+The &lt;skin&gt; block tells Gazebo where to find the mesh file that contains the
+actor’s skin. The &lt;actor&gt; element contains a child &lt;animation&gt; for each
+skeleton animation contained in mesh files.
+The &lt;animation_factor&gt; element in the actor plugin definition describes the time
+scaling factor that is used to coordinate translational motion with the actor’s
+walking animation.</p>
+<p><img alt="image0" src="_images/actor_smaller.gif" /></p>
+</div>
+<div class="section" id="vehicle-actors">
+<h3>Vehicle actors<a class="headerlink" href="#vehicle-actors" title="Permalink to this headline">¶</a></h3>
+<p>Vehicle actors are simulated vehicles that can follow a predefined path or
+be controlled by the user. Right now, the only supported vehicle is a small
+off-road vehicle.</p>
+<p><img alt="image1" src="_images/vehicle_smaller.gif" /></p>
+<p>The file <code class="docutils literal notranslate"><span class="pre">/opt/parrot-sphinx/usr/share/sphinx/actors/off_road_vehicle.actor</span></code>
+contains the description of off-road vehicle actors. It can be modified to tune
+the vehicle configuration. For example, PID gains can be tuned for each front
+wheel. The &lt;max_speed&gt; element defines the maximum speed of the vehicle. The
+&lt;max_steer&gt; element defines the maximum steering angle of the front wheels. The
+&lt;min_brake_percent&gt; element is used to approximate rolling resistance and engine
+braking.</p>
+<p>Below is a command line example that shows how to insert a drone and a vehicle
+with a predefined path into the scene:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sphinx /opt/parrot-sphinx/usr/share/sphinx/worlds/outdoor_1.world \</span>
+<span class="go">/opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::name=follower::pose=starting_pen \</span>
+<span class="go">/opt/parrot-sphinx/usr/share/sphinx/actors/off_road_vehicle.actor::machine=follower::path=/opt/parrot-sphinx/usr/share/sphinx/paths/follow_road.path</span>
+</pre></div>
+</div>
+<p>In this example, waypoints are positioned along the road defined in the scene of
+<code class="docutils literal notranslate"><span class="pre">/opt/parrot-sphinx/usr/share/sphinx/worlds/outdoor_1.world</span></code>.</p>
+<div class="section" id="keyboard-controls">
+<h4>Keyboard controls<a class="headerlink" href="#keyboard-controls" title="Permalink to this headline">¶</a></h4>
+<p>A GUI plugin can be used to publish Vehicle messages to control the vehicle’s
+throttle, brake, and steering with your keyboard:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;plugin</span> <span class="na">name=</span><span class="s">&quot;libsphinx_vehicle_gui&quot;</span> <span class="na">filename=</span><span class="s">&quot;libsphinx_vehicle_gui.so&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;model_name&gt;</span>vehicle<span class="nt">&lt;/model_name&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</pre></div>
+</div>
+<p>It must be copied into your world file before the &lt;/gui&gt; tag. Next you can find
+the available Vehicle control keys:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Left</span><span class="o">-</span><span class="n">Key</span>  <span class="n">Increase</span> <span class="n">hand</span> <span class="n">wheel</span> <span class="p">(</span><span class="o">+</span><span class="mi">20</span> <span class="n">degree</span><span class="p">)</span>
+<span class="n">Right</span><span class="o">-</span><span class="n">Key</span> <span class="n">Decrease</span> <span class="n">hand</span> <span class="n">wheel</span> <span class="p">(</span><span class="o">-</span><span class="mi">20</span> <span class="n">degree</span><span class="p">)</span>
+<span class="n">Up</span><span class="o">-</span><span class="n">Key</span>    <span class="n">Increase</span> <span class="n">gas</span> <span class="n">pedal</span> <span class="p">(</span><span class="o">+</span><span class="mi">30</span> <span class="o">%</span><span class="p">)</span>
+<span class="n">Down</span><span class="o">-</span><span class="n">Key</span>  <span class="n">Decrease</span> <span class="n">gas</span> <span class="n">pedal</span> <span class="p">(</span><span class="o">-</span><span class="mi">30</span> <span class="o">%</span><span class="p">)</span>
+<span class="n">h</span>         <span class="n">Increase</span> <span class="n">hand</span> <span class="n">brake</span> <span class="p">(</span><span class="o">+</span><span class="mi">30</span> <span class="o">%</span><span class="p">)</span>
+<span class="n">n</span>         <span class="n">Decrease</span> <span class="n">hand</span> <span class="n">brake</span> <span class="p">(</span><span class="o">-</span><span class="mi">30</span> <span class="o">%</span><span class="p">)</span>
+<span class="n">g</span>         <span class="n">Increase</span> <span class="n">brake</span> <span class="n">pedal</span> <span class="p">(</span><span class="o">+</span><span class="mi">30</span> <span class="o">%</span><span class="p">)</span>
+<span class="n">b</span>         <span class="n">Decrease</span> <span class="n">brake</span> <span class="n">pedal</span> <span class="p">(</span><span class="o">-</span><span class="mi">30</span> <span class="o">%</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-line-controls">
+<h4>Command line controls<a class="headerlink" href="#command-line-controls" title="Permalink to this headline">¶</a></h4>
+<p>It is also possible to control the vehicle by executing commands in the
+shell, or in your favorite scripting language.</p>
+<p>To set the gas pedal:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> parrot-gz topic -r cmd_gas_pedal -m
+</pre></div>
+</div>
+<p>To set the handbrake level:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> parrot-gz topic -r cmd_hand_brake -m
+</pre></div>
+</div>
+<p>To set the brake pedal level:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> parrot-gz topic -r cmd_brake_pedal -m
+</pre></div>
+</div>
+<p>To control the wheel:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> parrot-gz topic -r cmd_hand_wheel -m
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="virtualbox.html" class="btn btn-neutral float-left" title="Running sphinx in VirtualBox" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016-2020, Parrot
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

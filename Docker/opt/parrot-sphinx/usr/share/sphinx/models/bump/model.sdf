@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="bump">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <heightmap>
+            <uri>model://bump/materials/textures/heightmap.png</uri>
+            <size>3000 3000 70</size>
+            <pos>0 0 -50</pos>
+          </heightmap>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <heightmap>
+            <texture>
+              <diffuse>model://bump/materials/textures/grass_dry.png</diffuse>
+              <normal>model://bump/materials/textures/grass_dry.png</normal>
+              <size>20</size>
+            </texture>
+            <uri>model://bump/materials/textures/heightmap.png</uri>
+            <size>3000 3000 70</size>
+            <pos>0 0 -50</pos>
+          </heightmap>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

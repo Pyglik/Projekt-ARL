@@ -1,0 +1,10 @@
+1) Pliki do edycji
+
+~/bebop_ws/src/bebop_autonomy/bebop_driver/launch/bebop_node.launch
+/opt/parrot-sphinx/usr/share/sphinx/drones/bebop2.drone
+
+2) Strony WWW
+https://bebop-autonomy.readthedocs.io/en/latest/running.html
+https://web.archive.org/web/20180707103759/http://developer.parrot.com/docs/sphinx/installation.html
+
+3) bebop_autonomy.sh należy uruchomić z terminala (sh ./bebop_autonomy.sh)
