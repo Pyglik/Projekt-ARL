@@ -68,12 +68,19 @@ export ROS_IP=192.168.0.55
 export ROS_MASTER_URI=http://192.168.0.55:11311
 ```
 2. uruchomić symulację drona w Gazebo
-`sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/bebop2.drone::with_front_cam=false`
+```
+sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/bebop2.drone::with_front_cam=false
+```
 3. odczekać aż symulacja się rozpocznie i uruchomić węzeł bebop_autonomy
-`roslaunch bebop_driver bebop_node.launch`
+```
+roslaunch bebop_driver bebop_node.launch
+```
 4. uruchomić węzeł g2rr
-`rosrun g2rr g2r_republisher_node.pyc bebop2`
+```
+rosrun g2rr g2r_republisher_node.pyc bebop2
+```
 5. powyższe czynności można wykonać za pomocą skryptu `Pliki/run_bebop`
 6. otworzyć i uruchomić plik `Matlab/GUI.mlapp` w Matlab App Designer
 7. wpisać adres IP oraz numer portu (domyślnie 11311) ROS mastera i kliknąć połącz
+
 W tym momencie można sterować dronem za pomocą funkcjonalności dostępnych w aplikacji.
