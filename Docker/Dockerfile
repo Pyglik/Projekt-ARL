@@ -9,8 +9,11 @@ RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt
 RUN apt-get update && apt-get install -y ros-kinetic-desktop-full
 RUN source /opt/ros/kinetic/setup.bash
 
-# gnome-terminal
+# dodatkowe instalacje
 RUN apt-get update && apt-get install -y gnome-terminal
+RUN apt-get update && apt-get install -y net-tools
+RUN apt-get update && apt-get install -y iputils-ping
+RUN apt-get update && apt-get install -y nano
 
 # bebop_autonomy, g2rr, sphinx
 WORKDIR /home/bebop2
@@ -19,5 +22,10 @@ COPY ./opt /opt/
 RUN ln -s /opt/parrot-sphinx/usr/bin/parrot-sphinx-launcher.sh /bin/sphinx
 RUN source /home/bebop2/bebop_ws/devel/setup.bash
 RUN source /home/bebop2/catkin_ws/devel/setup.bash
+
+# sourcowanie do .bashrc
+RUN echo "source /opt/ros/kinetic/setup.bash" >> /root/.bashrc
+RUN echo "source /home/bebop2/bebop_ws/devel/setup.bash" >> /root/.bashrc
+RUN echo "source /home/bebop2/catkin_ws/devel/setup.bash" >> /root/.bashrc
 
 CMD bash run_bebop

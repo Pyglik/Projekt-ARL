@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export ROS_IP=192.168.0.61
-export ROS_MASTER_URI=http://192.168.0.61:11311
+export ROS_IP=172.17.0.2
+export ROS_MASTER_URI=http://172.17.0.2:11311
 
 cd /home/bebop2/Desktop
 sudo ./sphinx.sh
